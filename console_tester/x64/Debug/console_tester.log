@@ -1,0 +1,28 @@
+﻿Build started 3/29/2012 7:28:52 PM.
+     1>Project "C:\Users\Micha\Documents\Search-Engine\console_tester\console_tester.vcxproj" on node 2 (build target(s)).
+     1>C:\Windows\Microsoft.NET\Framework\v4.0.30319\Microsoft.Common.Targets(1546,5): warning MSB3270: There was a mismatch between the processor architecture of the project being built "MSIL" and the processor architecture of the reference "C:\Users\Micha\Documents\Search-Engine\x64\Debug\Library.dll", "AMD64". This mismatch may cause runtime failures. Please consider changing the targeted processor architecture of your project through the Configuration Manager so as to align the processor architectures between your project and references, or take a dependency on references with a processor architecture that matches the targeted processor architecture of your project.
+     1>InitializeBuildStatus:
+         Touching "x64\Debug\console_tester.unsuccessfulbuild".
+       GenerateTargetFrameworkMonikerAttribute:
+       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
+       ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr /nologo /W3 /WX- /Od /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc100.pdb" /TP /FU"C:\Users\Micha\Documents\Search-Engine\x64\Debug\Library.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /errorReport:prompt AssemblyInfo.cpp console_tester.cpp /clr:nostdlib 
+         AssemblyInfo.cpp
+         console_tester.cpp
+         Generating Code...
+         All outputs are up-to-date.
+       ResourceCompile:
+         All outputs are up-to-date.
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Micha\Documents\Search-Engine\x64\Debug\console_tester.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"x64\Debug\console_tester.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Micha\Documents\Search-Engine\x64\Debug\console_tester.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X64 x64\Debug\app.res
+         x64\Debug\AssemblyInfo.obj
+         x64\Debug\console_tester.obj
+         "x64\Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
+     1>console_tester.obj : error LNK2028: unresolved token (0A0004A1) "public: __cdecl Library::triesite::triesite(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,char,char)" (??0triesite@Library@@$$FQEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@DD@Z) referenced in function "int __cdecl main(void)" (?main@@$$HYAHXZ)
+     1>console_tester.obj : error LNK2019: unresolved external symbol "public: __cdecl Library::triesite::triesite(class std::basic_string<char,struct std::char_traits<char>,class std::allocator<char> >,char,char)" (??0triesite@Library@@$$FQEAA@V?$basic_string@DU?$char_traits@D@std@@V?$allocator@D@2@@std@@DD@Z) referenced in function "int __cdecl main(void)" (?main@@$$HYAHXZ)
+     1>C:\Users\Micha\Documents\Search-Engine\x64\Debug\console_tester.exe : fatal error LNK1120: 2 unresolved externals
+     1>Done Building Project "C:\Users\Micha\Documents\Search-Engine\console_tester\console_tester.vcxproj" (build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:01.75

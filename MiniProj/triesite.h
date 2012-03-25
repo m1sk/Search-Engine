@@ -2,13 +2,14 @@
 #include<string>
 #include<list>
 #include"triedoc.h"
+#include"fileutils.h"
 using namespace std;
 
 class triesite
 {
 private:
 	string sitename;
-	list<string> doclist;
+	list<triedoc> doclist;
 	bool mounted;
 	char mounttype;
 public:
@@ -22,4 +23,3 @@ public:
 	string docdownload(string,string=".");
 	~triesite(void);
 };
-

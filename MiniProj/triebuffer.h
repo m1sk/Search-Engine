@@ -1,5 +1,5 @@
 #pragma once
-#include<fstream>
+#include"fileutils.h"
 #include"trienode.h"
 using namespace std;
 

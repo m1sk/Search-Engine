@@ -30,6 +30,9 @@
     <ClInclude Include="triebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="fileutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="triesite.cpp">
