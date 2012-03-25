@@ -47,6 +47,7 @@
     <None Include="readme.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fileutils.h" />
     <ClInclude Include="triebuffer.h" />
     <ClInclude Include="triedoc.h" />
     <ClInclude Include="trienode.h" />
