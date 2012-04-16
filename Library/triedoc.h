@@ -1,6 +1,6 @@
 ﻿#pragma once
 #include<string>
-#include<array>
+#include<vector>
 #include"fileutils.h"
 #include"triebuffer.h"
 #include"trienode.h"
@@ -12,13 +12,13 @@ namespace Library {
 	{
 	private:
 		// name of the document (no extension)
-		string      docname;
+		string     docname;
 		// root of the trie tree
-		trienode*   trierootnode;
+		trienode   trierootnode;
 		// buffer containing current trienode
-		triebuffer* triebuf;
+		triebuffer triebuf;
 		// dynamic array used when creating and searching trietree
-		array<trienode, 0U> trienodesarray;
+		vector<trienode> trienodesarray;
 	public:
 																		/*************************************************
 	* FUNCTION

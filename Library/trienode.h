@@ -25,7 +25,6 @@ namespace Library {
 		long int      links [LINKS_LENGTH];
 	public:
 		trienode(void);
-		~trienode(void);
 		static string serialize(trienode);
 		static trienode deserialize(string);
 	};

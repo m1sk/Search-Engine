@@ -7,11 +7,6 @@ trienode::trienode(void)
 {
 }
 
-
-trienode::~trienode(void)
-{
-}
-
 inline int long_length(){
 	return 0;//strlen(itoa(LONG_MAX, NULL, 10));
 }

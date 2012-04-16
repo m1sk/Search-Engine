@@ -1,5 +1,6 @@
 #pragma once
 #include"fileutils.h"
+#include <vector>
 #include"trienode.h"
 using namespace std;
 using namespace System;
@@ -7,11 +8,11 @@ using namespace System;
 namespace Library {
 	class triebuffer
 	{
-		fstream file;
+		fstream* file;
 		string path;
-		trienode buffer[10];
+		vector<trienode> buffer;
 	public:
-		triebuffer(void);
-		~triebuffer(void);
+		triebuffer();
+		~triebuffer();
 	};
 }
