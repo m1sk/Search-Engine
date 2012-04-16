@@ -1,38 +1,5 @@
-﻿Build started 3/29/2012 7:53:10 PM.
-     1>Project "C:\Users\Micha\Documents\Search-Engine\Library\Library.vcxproj" on node 2 (build target(s)).
-     1>InitializeBuildStatus:
-         Touching "Debug\Library.unsuccessfulbuild".
-       GenerateTargetFrameworkMonikerAttribute:
-       Skipping target "GenerateTargetFrameworkMonikerAttribute" because all output files are up-to-date with respect to the input files.
-       ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /AI"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0" /Zi /clr /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _DEBUG /D _UNICODE /D UNICODE /EHa /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc100.pdb" /TP /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Core.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Data.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.dll" /FU"C:\Program Files (x86)\Reference Assemblies\Microsoft\Framework\.NETFramework\v4.0\System.Xml.dll" /analyze- /errorReport:prompt main.cpp triebuffer.cpp triedoc.cpp trienode.cpp triesite.cpp /clr:nostdlib 
-         main.cpp
-         triebuffer.cpp
-         triedoc.cpp
-         trienode.cpp
-         triesite.cpp
-         Generating Code...
-         All outputs are up-to-date.
-       ResourceCompile:
-         All outputs are up-to-date.
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"C:\Users\Micha\Documents\Search-Engine\Debug\Library.exe" /INCREMENTAL /NOLOGO /MANIFEST /ManifestFile:"Debug\Library.exe.intermediate.manifest" /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /DEBUG /PDB:"C:\Users\Micha\Documents\Search-Engine\Debug\Library.pdb" /ASSEMBLYDEBUG /TLBID:1 /DYNAMICBASE /FIXED:NO /NXCOMPAT /MACHINE:X86 Debug\app.res
-         Debug\AssemblyInfo.obj
-         Debug\Library.obj
-         Debug\main.obj
-         Debug\triebuffer.obj
-         Debug\triedoc.obj
-         Debug\trienode.obj
-         Debug\triesite.obj
-         "Debug\.NETFramework,Version=v4.0.AssemblyAttributes.obj"
-         Library.vcxproj -> C:\Users\Micha\Documents\Search-Engine\Debug\Library.exe
-       Manifest:
-         C:\Program Files (x86)\Microsoft SDKs\Windows\v7.0A\bin\mt.exe /nologo /verbose /outputresource:"C:\Users\Micha\Documents\Search-Engine\Debug\Library.exe;#1" /manifest Debug\Library.exe.intermediate.manifest
-       FinalizeBuildStatus:
-         Deleting file "Debug\Library.unsuccessfulbuild".
-         Touching "Debug\Library.lastbuildstate".
-     1>Done Building Project "C:\Users\Micha\Documents\Search-Engine\Library\Library.vcxproj" (build target(s)).
+﻿Build started 4/16/2012 4:34:50 PM.
 
 Build succeeded.
 
-Time Elapsed 00:00:05.21
+Time Elapsed 00:00:00

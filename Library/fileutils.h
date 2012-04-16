@@ -25,7 +25,8 @@ namespace Library {
 
 		list<string> myList;
 		void*  hFind = INVALID_HANDLE_VALUE;
-		LPWIN32_FIND_DATAA ffd = NULL;
+		WIN32_FIND_DATA wfd;
+		LPWIN32_FIND_DATAA ffd = (LPWIN32_FIND_DATAA)&wfd;
 		hFind = FindFirstFileA(rootPath.c_str(), ffd);
 
 		if (INVALID_HANDLE_VALUE == hFind) 
@@ -51,7 +52,8 @@ namespace Library {
 		list<string> result;
 
 		void*  hFind = INVALID_HANDLE_VALUE;
-		LPWIN32_FIND_DATAA ffd = NULL;
+		WIN32_FIND_DATA wfd;
+		LPWIN32_FIND_DATAA ffd = (LPWIN32_FIND_DATAA)&wfd;
 
 		hFind = FindFirstFileA(rootPath.c_str(), ffd);
 

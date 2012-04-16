@@ -32,12 +32,7 @@ void triedoc::putdoc(string site,string src,char mode){
 		transferFileToDirectory(mode, stopfilepath, dest, false);
 	}
 	else {
-		//check for a stop list, creating an empty one if it doesn't exist
-		//if(fileExists(site<<"\\stop.lst"))
-		//else
-		//{
-		//
-		//}
+		CreateFileA(dest + stopfilename);
 	}
 	docname = getFilePrefix(src);
 	triebuf = new triebuffer();
