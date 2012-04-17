@@ -31,7 +31,6 @@ namespace Library {
 
 		if (INVALID_HANDLE_VALUE == hFind) 
 			return myList;
-
 		do
 		{
 			if (!(ffd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
@@ -94,7 +93,7 @@ namespace Library {
 	// Returns the current folder
 	//Folder from which you run the project executable file
 	static string getCurrentPath() 
-	{     
+	{
 		char buffer[MAX_PATH];     
 		GetModuleFileNameA( NULL, buffer, MAX_PATH );     
 		string::size_type pos = string( buffer ).find_last_of( "\\/" );     
@@ -188,4 +187,10 @@ namespace Library {
 		}
 		return 0;
 	}
+
+	static string appendPath(string base, string extra)
+	{
+		return base + "\\" + extra;
+	}
+
 }

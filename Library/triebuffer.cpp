@@ -2,17 +2,10 @@
 
 using namespace Library;
 
-triebuffer::triebuffer(void)
-{
-	file = fstream();
-	path = string();
-	for (int i = 0; i < 10; ++i)
-	{
-		buffer[i] = trienode();
-	}
-}
+triebuffer::triebuffer()
+	: file(NULL), path(), buffer(10, trienode())
+	{}
 
-
-triebuffer::~triebuffer(void)
+triebuffer::~triebuffer()
 {
 }

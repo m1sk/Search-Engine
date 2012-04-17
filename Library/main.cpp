@@ -7,8 +7,8 @@ using namespace Library;
 int main()
 {
 	cout << "Hello, world" << endl;
-	triesite site = triesite("C:\\Users\\Micha\\Desktop\\temp",'c');
-	site.mount("C:\\Users\\Micha\\Desktop\\temp");
+	triesite site = triesite("C:\\Users\\Micha\\Desktop\\temp",'m');
+	
 	int x;
 	cin >> x;
 	return 0;

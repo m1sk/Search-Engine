@@ -1,18 +1,18 @@
 #include "triedoc.h"
 #include <sstream>
+#include <fstream>
 #include <algorithm>
 
 using namespace Library;
 
-triedoc::triedoc(string path,string name){
+triedoc::triedoc(string path,string name)
+	: triebuf (), trierootnode (), trienodesarray ()
+{
 	if (name != "") {
 		putdoc(path, name);
 	}
 	else {
-		triebuf =  new triebuffer();
 		docname = "";
-		trierootnode = NULL;
-		trienodesarray = array<trienode, 0U>();
 	}
 }
 
@@ -21,23 +21,22 @@ void triedoc::putdoc(string site,string src,char mode){
 	ss << site << "\\" << getFilePrefix(getFileName(src));
 	string dest = ss.str();
 	string fullsrc = makeFullPath(src);
-	if(createDirectory(dest) == 0)
-		throw new exception("Was unable to add document to search site.\
-							Does it already exist?");
-	transferFileToDirectory(mode,fullsrc,dest);
-	list<string> lst = getFileNameList(getFilePath(fullsrc));
-	string stopfilename = getFilePrefix(src) + ".stop";
-	string stopfilepath = getFilePath(fullsrc) + stopfilename;
-	if(find(lst.begin(), lst.end(), stopfilename) != lst.end()) {
-		transferFileToDirectory(mode, stopfilepath, dest, false);
-	}
-	else {
-		CreateFileA(dest + stopfilename);
+	if(createDirectory(dest) != 0) // File doesn't exist
+	{
+		transferFileToDirectory(mode,fullsrc,dest);
+		list<string> lst = getFileNameList(getFilePath(fullsrc));
+		string stopfilename = getFilePrefix(src) + ".stop";
+		string stopfilepath = getFilePath(fullsrc) + stopfilename;
+		if(find(lst.begin(), lst.end(), stopfilename) != lst.end()) {
+			transferFileToDirectory(mode, stopfilepath, dest, false);
+		}
+		else {
+			ofstream file;
+			file.open(dest + stopfilename);
+			file.close();
+		}
 	}
 	docname = getFilePrefix(src);
-	triebuf = new triebuffer();
-	trierootnode = NULL;
-	trienodesarray = array<trienode, 0U>();
 }
 void triedoc::getdoc(string site,string dest){
 	stringstream dests;
@@ -54,6 +53,4 @@ void triedoc::getdoc(string site,string dest){
 	}	
 }
 triedoc::~triedoc()
-{
-	delete triebuf;
-}
+{}

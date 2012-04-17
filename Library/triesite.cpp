@@ -4,7 +4,7 @@
 using namespace Library;
 
 triesite::triesite(string path, char func, char mode) {
-
+	doclist = list<triedoc>();
 	if(path.compare("")!=0){
 		sitename = makeFullPath(path);
 		if(func == 'C' || func == 'c'){
@@ -18,7 +18,7 @@ triesite::triesite(string path, char func, char mode) {
 		sitename = "";
 		doclist.clear();
 		mounted = false;
-		mounttype = 0;
+		mounttype = '\0';
 	}
 }
 
@@ -38,7 +38,7 @@ void triesite::mount(string path,char mode){
 	list<string>::iterator iter;
 	triedoc* tmp;
 	for(iter = docs.begin(); iter != docs.end(); ++iter){
-		tmp = new triedoc(path, *iter);
+		tmp = new triedoc(path, appendPath(path, *iter));
 		doclist.push_back(*tmp);
 	}
 	mounttype = mode;
@@ -46,10 +46,7 @@ void triesite::mount(string path,char mode){
 }
 
 void triesite::unmount(){
-	list<triedoc>::iterator iter;
-	for(iter = doclist.begin(); iter != doclist.end(); ++iter){
-		delete &(*iter);
-	}
+	doclist.clear();
 	sitename = "";
 	mounttype = '\0';
 	mounted = false;
@@ -84,9 +81,8 @@ string triesite::docdownload(string name,string path = getCurrentPath()) {
 		doc->getdoc(sitename,path);
 	}
 	else {
-		throw new exception("Document doesnt exist in search site");
+		throw new exception("Document doesn't exist in search site");
 	}
-	stringstream ss;
 	return path;
 }
 
