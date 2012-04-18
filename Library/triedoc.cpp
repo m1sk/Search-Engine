@@ -25,31 +25,33 @@ void triedoc::putdoc(string site,string src,char mode){
 	{
 		transferFileToDirectory(mode,fullsrc,dest);
 		list<string> lst = getFileNameList(getFilePath(fullsrc));
-		string stopfilename = getFilePrefix(src) + ".stop";
-		string stopfilepath = getFilePath(fullsrc) + stopfilename;
+		string stopfilename = getFilePrefix(getFileName(src)) + ".stop";
+		string stopfilepath = getFilePath(fullsrc)+"\\" + stopfilename;
 		if(find(lst.begin(), lst.end(), stopfilename) != lst.end()) {
 			transferFileToDirectory(mode, stopfilepath, dest, false);
 		}
 		else {
 			ofstream file;
-			file.open(dest + stopfilename);
+			file.open(dest + "\\" +stopfilename);
 			file.close();
 		}
 	}
-	docname = getFilePrefix(src);
+	docname = getFilePrefix(getFileName(src));
 }
 void triedoc::getdoc(string site,string dest){
 	stringstream dests;
 	dests << dest << "\\" << docname;
 	stringstream sites;
 	sites << site << "\\" << docname;
-	createDirectory(dests.str());
-	list<string> files = getFileNameList(dests.str());
-	dests << "\\" << docname << "\\";
+	if(	createDirectory(dests.str())==0)cout<<"failed to create directory"<<endl;
+	cout<<dests.str()<<endl
+		;
+	list<string> files = getFileNameList(sites.str());
+	sites << "\\";
 	for(list<string>::iterator itr = files.begin();itr != files.end(); itr++)
 	{
 		copyFileToDirectory(sites.str() + string(*itr),
-			dests.str() + string(*itr), true);
+			dests.str(), true);
 	}	
 }
 triedoc::~triedoc()

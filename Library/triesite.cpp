@@ -33,7 +33,7 @@ void triesite::create(string path){
 void triesite::mount(string path,char mode){
 	//iterate through all files in path and create triedocs from each when 
 	// then add the triedocs to doclist
-	sitename = getFileName(path);
+	sitename = makeFullPath(path);
 	list<string> docs = getSubDirectoryNameList(path);
 	list<string>::iterator iter;
 	triedoc* tmp;
@@ -81,7 +81,7 @@ string triesite::docdownload(string name,string path = getCurrentPath()) {
 		doc->getdoc(sitename,path);
 	}
 	else {
-		throw new exception("Document doesn't exist in search site");
+		return NULL;
 	}
 	return path;
 }
