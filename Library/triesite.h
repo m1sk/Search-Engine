@@ -41,7 +41,7 @@ namespace Library {
 	*     mount()
 	*     create()
 	**************************************************/
-		triesite(string name, char func = 'c', char mode = 'q');
+		triesite(string name ="", char func = 'c', char mode = 'q');
 	/*************************************************
 	* FUNCTION
 	*    create
@@ -116,11 +116,9 @@ namespace Library {
 	*                 (if this not a full path then we assume that it is 
 	*					relative to current directory)
 	* RETURN VALUE
-	*    Full path of the document  
+	*    Full path of the document but if no such file exists then null 
 	* MEANING
 	*     copies the doc named name to the destination path
-	* THROWS
-	*	  "Document doesn't exist in search site" - the is no document named "name"
 	* SEE ALSO
 	*    getdoc()
 	**************************************************/

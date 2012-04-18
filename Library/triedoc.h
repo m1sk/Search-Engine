@@ -37,7 +37,7 @@ namespace Library {
 	* SEE ALSO
 	*     putdoc()
 	**************************************************/
-		triedoc(string path = getCurrentPath(),string name = "");
+		triedoc(string path = "",string name = "");
 																			/*************************************************
 	* FUNCTION
 	*    putdoc
