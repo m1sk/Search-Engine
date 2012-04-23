@@ -125,6 +125,65 @@ namespace Library {
 		string docdownload(string name,string path);
 	/*************************************************
 	* FUNCTION
+	*    del
+	* PARAMETERS
+	*	 char   removeType - Whether to perform logical ('l' or 'L')
+	*					or physical ('p' or 'P') removal of the site
+	*					(Default: logic)
+	* MEANING
+	*    delete site either logically or physically based on parameter
+	* THROWS
+	*	path not a directory, invalid path, directory not empty, 
+	* open file handle on directory
+
+	* SEE ALSO
+	*    triedoc::del()
+	**************************************************/
+		void del(char removeType = 'l');
+	/*************************************************
+	* FUNCTION
+	*    docdel
+	* PARAMETERS
+	*	 string     name - name of doc in doc list to delete 
+	*    char removeType - Whether to perform logical ('l' or 'L')
+	*					or physical ('p' or 'P') removal of the site
+	*					(Default: logic)
+	* MEANING
+	*    delete doc (basicly call del on the doc)either logically or physically based on parameter
+	*    and remove from doclist
+	* THROWS
+	*	
+	*
+	* SEE ALSO
+	*    triedoc::del()
+	**************************************************/
+		void docdel(string name,char removeType = 'l');
+	/*************************************************
+	* FUNCTION
+	*    putstopfl
+	* PARAMETERS
+	*	 string   stopName - path to a file with a "stop" extension
+	*           if this is not a full path assumes relative to current directory
+	* MEANING
+	*   copy to site and rename to stop.lst
+	* THROWS
+	*	
+	**************************************************/
+		void putstopfl(string stopName);
+	/*************************************************
+	* FUNCTION
+	*    docidx
+	* PARAMETERS
+	*	 string   docName - name of a doc in doclist
+	* MEANING
+	*   call idx on the triedoc named "docName" 
+	*   if that doc exists in doclist
+	* THROWS
+	*	
+	**************************************************/
+		void docidx(string docName);
+	/*************************************************
+	* FUNCTION
 	*    destructor
 	* MEANING
 	*     deletes all allocated memory used by the variables

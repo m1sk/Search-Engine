@@ -85,7 +85,14 @@ string triesite::docdownload(string name,string path = getCurrentPath()) {
 	}
 	return path;
 }
-
+void triesite::del(char removeType = 'l')
+{}
+void triesite::docdel(string name,char removeType = 'l')
+{}
+void triesite::putstopfl(string stopName)
+{}
+void triesite::docidx(string docName)
+{}
 triesite::~triesite(){
 	unmount();
 }

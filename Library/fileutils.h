@@ -37,7 +37,7 @@ namespace Library {
 				myList.push_back(ffd->cFileName);		
 		}
 		while (FindNextFileA(hFind, ffd) != 0);
-
+		FindClose(hFind);
 		return myList;
 	}
 
@@ -71,7 +71,16 @@ namespace Library {
 			result.pop_front(); // remove '..'
 		return result;
 	}
-
+	void removeDirectory(string dirName)
+	{
+		rmdir(dirName.c_str());
+		if(errno ==	ENOTEMPTY)
+			throw "not a directory, the directory is not empty";
+		if(errno ==	ENOENT)
+			throw "path is invalid"; 
+		if(errno ==	EACCES)
+			throw "A program has an open handle to the directory"; 
+	}
 	// print all string element from list<string>
 	static void printAllList(list<string> myList)
 	{
@@ -95,9 +104,11 @@ namespace Library {
 	static string getCurrentPath() 
 	{
 		char buffer[MAX_PATH];     
-		GetModuleFileNameA( NULL, buffer, MAX_PATH );     
-		string::size_type pos = string( buffer ).find_last_of( "\\/" );     
-		return string( buffer ).substr( 0, pos); 
+		GetModuleFileNameA(NULL, buffer, MAX_PATH);     
+		string::size_type pos = string(buffer).find_last_of( "\\/" );
+		string::size_type pos2 = string(buffer).substr(0, pos).find_last_of( "\\/" );     
+		
+		return string(buffer).substr(0, pos2); 
 	} 
 
 	// if a the parameter "path" isn't a full path this function will concatenate "path" to the current directory

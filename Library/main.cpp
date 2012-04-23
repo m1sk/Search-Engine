@@ -9,6 +9,7 @@ int main()
 {
 	cout << "Hello, world" << endl;
 	triesite site;
+	cout<<getCurrentPath()<<endl;
 	system("pause");	
 	return 0;
 }

@@ -11,8 +11,10 @@ namespace Library {
 	class triedoc
 	{
 	private:
-		// name of the document (no extension)
+		// name of the document 
 		string     docname;
+		// extension of the document
+		string     docext;
 		// root of the trie tree
 		trienode   trierootnode;
 		// buffer containing current trienode
@@ -20,7 +22,7 @@ namespace Library {
 		// dynamic array used when creating and searching trietree
 		vector<trienode> trienodesarray;
 	public:
-																		/*************************************************
+	/*************************************************
 	* FUNCTION
 	*    constructor
 	* PARAMETERS
@@ -38,7 +40,7 @@ namespace Library {
 	*     putdoc()
 	**************************************************/
 		triedoc(string path = "",string name = "");
-																			/*************************************************
+	/*************************************************
 	* FUNCTION
 	*    putdoc
 	* PARAMETERS
@@ -57,7 +59,7 @@ namespace Library {
 	*     putdoc()
 	**************************************************/
 		void putdoc(string site,string src,char mode = 'c');
-											/*************************************************
+	/*************************************************
 	* FUNCTION
 	*    putdoc
 	* PARAMETERS
@@ -68,6 +70,48 @@ namespace Library {
 	*     copies this document from the site to destination
 	**************************************************/
 		void getdoc(string site,string dest = getCurrentPath());
+	/*************************************************
+	* FUNCTION
+	*    del
+	* PARAMETERS
+	*	 string     fullPath - full path to the triesite
+	*    char removeType - Whether to perform logical ('l' or 'L')
+	*					or physical ('p' or 'P') removal of the site
+	*					(Default: logic)
+	* MEANING
+	*    delete doc either logically or physically based on parameter
+	*    and remove from doclist
+	* THROWS
+	*	
+	*
+	**************************************************/
+		void del(string fullPath,char removeType = 'l');
+	/*************************************************
+	* FUNCTION
+	*    idx
+	* PARAMETERS
+	*	 string     fullPath - full path to the triesite
+	* MEANING
+	*   
+	* THROWS
+	*    
+	* SEE ALSO
+	*    flush()
+	**************************************************/
+		void idx(string fullPath);
+	/*************************************************
+	* FUNCTION
+	*    flush
+	* PARAMETERS
+	*	 string     fullPath - full path to the triesite
+	* MEANING
+	*   
+	* THROWS
+	*    
+	* SEE ALSO
+	*   
+	**************************************************/
+		void flush(string fullPath);
 		// getter for docname
 		string getdocname() const { return docname; }
 		// destructor

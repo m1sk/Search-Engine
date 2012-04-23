@@ -2,7 +2,7 @@
 #include <sstream>
 #include <fstream>
 #include <algorithm>
-
+#include <stdio.h>
 using namespace Library;
 
 triedoc::triedoc(string path,string name)
@@ -13,6 +13,7 @@ triedoc::triedoc(string path,string name)
 	}
 	else {
 		docname = "";
+		docext = "";
 	}
 }
 
@@ -37,6 +38,7 @@ void triedoc::putdoc(string site,string src,char mode){
 		}
 	}
 	docname = getFilePrefix(getFileName(src));
+	docext  = getFileSuffix(getFileName(src));
 }
 void triedoc::getdoc(string site,string dest){
 	stringstream dests;
@@ -54,5 +56,17 @@ void triedoc::getdoc(string site,string dest){
 			dests.str(), true);
 	}	
 }
+void triedoc::del(string fullPath,char removeType = 'l')
+{
+	if(removeType == 'P'||removeType =='p')
+	{
+		remove(fullPath+'\\'+docname+'\\'+docname+'.'+docext);
+	}
+}
+void triedoc::idx(string fullPath)
+{}
+void triedoc::flush(string fullPath)
+{}
+
 triedoc::~triedoc()
 {}
