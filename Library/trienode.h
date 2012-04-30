@@ -10,6 +10,8 @@ namespace Library {
 	// a trienode is a node in a trie tree
 	struct trienode
 	{
+		// the last serial number assigned
+		static long lastserialnr;
 		// serial number for the node in the trie tree
 		long          nodeserialnr;
 		// offset for the first instance of a word in the text file
@@ -38,9 +40,16 @@ namespace Library {
 		* RETURN VALUE
 		*    A trienode object initialized with the passed data
 		**************************************************/
-		trienode(long _nodeserialnr, long _firstoffset,
+		trienode(long _firstoffset,
 			long _nrofoccurences, unsigned char _letter,
-			bool _wordend, long int _links [LINKS_LENGTH]);
+			bool _wordend);
+		/*************************************************
+		* FUNCTION
+		*    operator[]
+		* RETURN VALUE
+		*    The index of the trienode pointed to by the ascii value of c
+		**************************************************/
+		int operator[](char c);
 	//	static string serialize(trienode);
 	//	static trienode deserialize(string);
 	};

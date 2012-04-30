@@ -4,22 +4,27 @@
 using namespace Library;
 
 trienode::trienode()
-	: nodeserialnr(0),
+	: lastserialnr(0),
+    nodeserialnr(0),
 	firstoffset(0),
 	letter('\0'),
 	wordend(false)
 {for (int i = 0; i < LINKS_LENGTH; ++i) links[i] = NULL_LINK;}
 
-trienode::trienode(long _nodeserialnr, long _firstoffset,
+trienode::trienode(long _firstoffset,
 	long _nrofoccurences, unsigned char _letter,
-	bool _wordend, long int _links [LINKS_LENGTH])
-	: nodeserialnr(_nodeserialnr),
+	bool _wordend)
+	: nodeserialnr(++lastserialnr),
 	firstoffset(_firstoffset),
 	nrofoccurences(_nrofoccurences),
 	letter(_letter),
 	wordend(_wordend)
-{for (int i = 0; i < LINKS_LENGTH; ++i) links[i] = _links[i];}
+{for (int i = 0; i < LINKS_LENGTH; ++i) links[i] = NULL_LINK;}
 
+trienode::operator[](char c)
+{
+	return links[(int) c];
+}
 
 inline int long_length(){
 	return 0;//strlen(itoa(LONG_MAX, NULL, 10));
