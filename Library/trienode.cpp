@@ -3,9 +3,10 @@
 
 using namespace Library;
 
+long trienode::lastserialnr = 0;
+
 trienode::trienode()
-	: lastserialnr(0),
-    nodeserialnr(0),
+	: nodeserialnr(0),
 	firstoffset(0),
 	letter('\0'),
 	wordend(false)
@@ -21,9 +22,14 @@ trienode::trienode(long _firstoffset,
 	wordend(_wordend)
 {for (int i = 0; i < LINKS_LENGTH; ++i) links[i] = NULL_LINK;}
 
-trienode::operator[](char c)
+long trienode::operator[](char c)
 {
 	return links[(int) c];
+}
+
+void trienode::set_link(long idx, long val)
+{
+	links[idx] = val;
 }
 
 inline int long_length(){

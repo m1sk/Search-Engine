@@ -3,7 +3,6 @@
 #include <vector>
 #include"trienode.h"
 using namespace std;
-using namespace System;
 
 namespace Library {
 	struct triebuffer

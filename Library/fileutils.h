@@ -6,7 +6,6 @@
 #include <sstream>
 
 using namespace std;
-using namespace System;
 
 namespace Library {
 
@@ -71,10 +70,11 @@ namespace Library {
 			result.pop_front(); // remove '..'
 		return result;
 	}
-	void removeDirectory(string dirName)
+	static void removeDirectory(string dirName)
 	{
-		rmdir(dirName.c_str());
-		if(errno ==	ENOTEMPTY)
+		remove(dirName.c_str());
+		//rmdir(dirName.c_str());
+			if(errno ==	ENOTEMPTY)
 			throw "not a directory, the directory is not empty";
 		if(errno ==	ENOENT)
 			throw "path is invalid"; 

@@ -5,7 +5,6 @@
 #include"triebuffer.h"
 #include"trienode.h"
 using namespace std;
-using namespace System;
 
 namespace Library {
 	class triedoc
@@ -85,7 +84,7 @@ namespace Library {
 	*	
 	*
 	**************************************************/
-		void del(string fullPath,char removeType = 'l');
+		void del(string fullPath,char removeType='l');
 	/*************************************************
 	* FUNCTION
 	*    idx
@@ -112,6 +111,12 @@ namespace Library {
 	*   
 	**************************************************/
 		void flush(string fullPath);
+		void add_node(string word, long offset);
+	private:
+		int get_node(int);
+		void indexing(string site);
+
+	public:
 		// getter for docname
 		string getdocname() const { return docname; }
 		// destructor

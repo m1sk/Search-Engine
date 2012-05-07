@@ -4,7 +4,6 @@
 #include"triedoc.h"
 #include"fileutils.h"
 using namespace std;
-using namespace System;
 
 namespace Library {
 	// triesite manages a directory which contains triedocs

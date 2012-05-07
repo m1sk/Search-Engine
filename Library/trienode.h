@@ -2,14 +2,13 @@
 #include <string>
 #include"fileutils.h"
 using namespace std;
-#define LINKS_LENGTH 256
-#define NULL_LINK -1
-using namespace System;
 
 namespace Library {
+	struct trienode {
 	// a trienode is a node in a trie tree
-	struct trienode
-	{
+		static const int LINKS_LENGTH = 256;
+		static const long NULL_LINK = -1;
+
 		// the last serial number assigned
 		static long lastserialnr;
 		// serial number for the node in the trie tree
@@ -49,7 +48,8 @@ namespace Library {
 		* RETURN VALUE
 		*    The index of the trienode pointed to by the ascii value of c
 		**************************************************/
-		int operator[](char c);
+		long operator[](char c);
+		void set_link(long idx, long val);
 	//	static string serialize(trienode);
 	//	static trienode deserialize(string);
 	};
