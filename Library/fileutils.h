@@ -4,7 +4,7 @@
 #include <list>
 #include <fstream>
 #include <sstream>
-
+#include <stdio.h>
 using namespace std;
 
 namespace Library {
@@ -72,14 +72,26 @@ namespace Library {
 	}
 	static void removeDirectory(string dirName)
 	{
-		remove(dirName.c_str());
-		//rmdir(dirName.c_str());
-			if(errno ==	ENOTEMPTY)
-			throw "not a directory, the directory is not empty";
-		if(errno ==	ENOENT)
-			throw "path is invalid"; 
-		if(errno ==	EACCES)
-			throw "A program has an open handle to the directory"; 
+		//remove(dirName.c_str());
+		RemoveDirectoryA(dirName.c_str());
+		if(errno != 0)
+			throw exception(strerror(errno));
+	}
+	static void removeDirectoryWithSubs(string dirPath)
+	{
+		list<string> files = getFileNameList(dirPath);
+		list<string>::iterator it = files.begin();
+		for(it =files.begin(); it!=files.end();it++ )
+		{
+			remove((dirPath+"\\"+*it).c_str());
+		}
+		list<string> directories = getSubDirectoryNameList(dirPath);
+		 it = directories.begin();
+		for(it =directories.begin(); it!=directories.end();it++ )
+		{
+			removeDirectoryWithSubs(dirPath+"\\"+(*it));
+		}
+		removeDirectory(dirPath.c_str());
 	}
 	// print all string element from list<string>
 	static void printAllList(list<string> myList)
@@ -204,4 +216,18 @@ namespace Library {
 		return base + "\\" + extra;
 	}
 
+	static string find_triedoc(string site, string name)
+	{
+		list<string>files;
+		list<string>::iterator fileit;
+		files = getFileNameList(appendPath(site, name));
+		for(fileit = files.begin(); fileit!=files.end(); fileit++)
+		{
+			if((getFilePrefix(*fileit) == name)
+				&& (getFileSuffix(*fileit) != string("stop"))
+				&& (getFileSuffix(*fileit) != string("trie")))
+				return *fileit;
+		}
+		return "";
+	}
 }

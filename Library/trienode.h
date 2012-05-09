@@ -5,24 +5,24 @@ using namespace std;
 
 namespace Library {
 	struct trienode {
-	// a trienode is a node in a trie tree
+	// A trienode is a node in a trie tree
 		static const int LINKS_LENGTH = 256;
 		static const long NULL_LINK = -1;
 
-		// the last serial number assigned
-		static long lastserialnr;
-		// serial number for the node in the trie tree
+		// The last serial number assigned
+		static long   lastserialnr;
+		// The serial number for the node in the trie tree
 		long          nodeserialnr;
-		// offset for the first instance of a word in the text file
+		// The offset for the first instance of a word in the text file
 		long          firstoffset;
-		// number of words in the text file
+		// The number of words in the text file
 		long          nrofoccurences;
-		// a character for this node
+		// The letter this node represents
 		unsigned char letter;
-		// is this character the end of a word (when looking up the trie tree)
+		// Whether this node is the end of a word (when looking up the trie tree)
 		bool          wordend;
-		// array characters that represent the ascii character 
-		// for next node, each entry is the serial of next available node otherwise -1  
+		// Array indeces are the ASCII values of the characters
+		// Array values  are the serial numbers of the next nodes
 		long int      links [LINKS_LENGTH];
 		/*************************************************
 		* FUNCTION
@@ -49,9 +49,23 @@ namespace Library {
 		*    The index of the trienode pointed to by the ascii value of c
 		**************************************************/
 		long operator[](char c);
-		void set_link(long idx, long val);
-	//	static string serialize(trienode);
-	//	static trienode deserialize(string);
+		/*************************************************
+		* FUNCTION
+		*    set_link
+		* PARAMETERS
+		*    char idx - The index of the link to be changed
+		*    long val - The new value for the link
+		* MEANING
+		*    Update the link idx with the new value val
+		**************************************************/
+		void set_link(char idx, long val);
+		/*************************************************
+		* FUNCTION
+		*    print_node
+		* MEANING
+		*    Prints the values of the node nicely
+		**************************************************/
+		void print_node() const;
 	};
 
 }

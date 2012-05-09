@@ -6,20 +6,19 @@
 using namespace std;
 
 namespace Library {
-	// triesite manages a directory which contains triedocs
-	// 
+	// A triesite is an abstraction of the search site
 	class triesite
 	{
 	private:
-		// full path for the site
-		string         sitename;
-		// documents in the site
-		list<triedoc>  doclist;
-		// flag denoting whether the site is mounted
-		bool           mounted;
-		// mounttype can be 'q' meaning the site is mounted for queries only
-		// or 'm' for maintenance giving full access 
-		char           mounttype;
+		// The full path to the site
+		string        sitename;
+		// A list of the documents in the site
+		list<triedoc> doclist;
+		// A flag denoting whether the site is mounted
+		bool          mounted;
+		// A flag denoting whether the site is mounted
+		// for queries ('q'/'Q') or maintenance ('m'/'M')
+		char          mounttype;
 	public:
     /*************************************************
 	* FUNCTION
@@ -34,8 +33,6 @@ namespace Library {
 	*	 char   mode - The mount type, which is passed to mount()
 	* RETURN VALUE
 	*    A triesite object initialized with the parameters passed
-	* MEANING
-	*     initializes variable to 
 	* SEE ALSO
 	*     mount()
 	*     create()
@@ -47,7 +44,10 @@ namespace Library {
 	* PARAMETERS
 	*    string path - The path to the site, this must be a full path
 	* MEANING
-	*     creates a directory for the site
+	*     Creates a directory for the site
+	* THROWS
+	*     Unable to create a search site at _path_
+	*     Error: _errorMsg_ - if there was an error creating the search site
 	* SEE ALSO
 	*     mount()
 	*     createDirectory()
@@ -59,20 +59,18 @@ namespace Library {
 	* PARAMETERS
 	*    string path - The path to the site (must be full path)
 	*	 char   mode - The mount type,  'q' (or 'Q') meaning the site is mounted for queries only
-	*    or 'm' (or 'M') for maintenance giving full access
+	*                                or 'm' (or 'M') for maintenance giving full access
 	* MEANING
-	*     populates doclist with triedocs for the parameter site
-	* THROWS
-	*	  "Unable to create a search site" - there is an error creating the directory
+	*    Populates doclist with triedocs for the site path passed
 	**************************************************/
 		void mount(string path,char mode='q');
 	/*************************************************
 	* FUNCTION
 	*    unmount
 	* MEANING
-	*     clears doclist and resets all other data to default values
+	*    Clears the doclist and resets all other data to default values
 	* SEE ALSO
-	*     mount()
+	*    mount()
 	**************************************************/
 		void unmount();
 	/*************************************************
@@ -81,10 +79,10 @@ namespace Library {
 	* PARAMETERS
 	*    string compname - document name (without extension)
 	* RETURN VALUE
-	*    if the document exists return the triedoc for compname
-	*    otherwise NULL
+	*    If the document exists return the triedoc for compname
+	*    or NULL otherwise
 	* MEANING
-	*     checks if a the parameter compname is in the triesite
+	*     Checks if a the parameter compname is in the triesite
 	**************************************************/
 		triedoc* docexists(string compname);
 	/*************************************************
@@ -97,7 +95,7 @@ namespace Library {
 	*					or move ('m' or 'M') the document into the site
 	*					(Default: copy)
 	* MEANING
-	*     add the document given by name to the triesite by copying it to 
+	*     Add the document given by name to the triesite by copying it to 
 	*	  the site adding adding the document to the doclist
 	* THROWS
 	*	  "Document already exists in search site" - if document named "name" exists
@@ -105,7 +103,7 @@ namespace Library {
 	* SEE ALSO
 	*    putdoc()
 	**************************************************/
-		void docupload(string name,char func);
+		void docupload(string name,char func ='c');
 	/*************************************************
 	* FUNCTION
 	*    docdownload
@@ -126,33 +124,32 @@ namespace Library {
 	* FUNCTION
 	*    del
 	* PARAMETERS
-	*	 char   removeType - Whether to perform logical ('l' or 'L')
+	*	 char removeType - Whether to perform logical ('l' or 'L')
 	*					or physical ('p' or 'P') removal of the site
-	*					(Default: logic)
+	*					(Default: logical)
 	* MEANING
-	*    delete site either logically or physically based on parameter
+	*    Delete the site either logically or physically based on parameter
 	* THROWS
-	*	path not a directory, invalid path, directory not empty, 
-	* open file handle on directory
-
+	*	The appropriate exception if required
 	* SEE ALSO
 	*    triedoc::del()
+	*    fileutils::removeDirectoryWithSubs
+	*    errno
+	*    strerror
 	**************************************************/
 		void del(char removeType = 'l');
 	/*************************************************
 	* FUNCTION
 	*    docdel
 	* PARAMETERS
-	*	 string     name - name of doc in doc list to delete 
-	*    char removeType - Whether to perform logical ('l' or 'L')
+	*	 string name - name of doc in doc list to delete 
+	*    char   type - Whether to perform logical ('l' or 'L')
 	*					or physical ('p' or 'P') removal of the site
-	*					(Default: logic)
+	*					(Default: logical)
 	* MEANING
-	*    delete doc (basicly call del on the doc)either logically or physically based on parameter
-	*    and remove from doclist
+	*    Delete doc (basicly call del on the doc with removeType) and remove from doclist
 	* THROWS
-	*	
-	*
+	*	Couldn't delete  _name_ because there is no document by that name.
 	* SEE ALSO
 	*    triedoc::del()
 	**************************************************/
@@ -162,7 +159,7 @@ namespace Library {
 	*    putstopfl
 	* PARAMETERS
 	*	 string   stopName - path to a file with a "stop" extension
-	*           if this is not a full path assumes relative to current directory
+	*                       if this is not a full path assumes relative to current directory
 	* MEANING
 	*   copy to site and rename to stop.lst
 	* THROWS
@@ -175,17 +172,16 @@ namespace Library {
 	* PARAMETERS
 	*	 string   docName - name of a doc in doclist
 	* MEANING
-	*   call idx on the triedoc named "docName" 
-	*   if that doc exists in doclist
+	*   Call idx on docName if that doc exists in doclist
 	* THROWS
-	*	
+	*	_stopName_ is not a valid stop file
 	**************************************************/
 		void docidx(string docName);
 	/*************************************************
 	* FUNCTION
 	*    destructor
 	* MEANING
-	*     deletes all allocated memory used by the variables
+	*     Deletes all allocated memory used by the variables, unmounts
 	*	  and set other variables to default data
 	* SEE ALSO
 	*     unmount()

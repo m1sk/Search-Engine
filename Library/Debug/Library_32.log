@@ -1,4 +1,4 @@
-﻿Build started 5/7/2012 8:11:21 PM.
+﻿Build started 5/9/2012 7:57:28 PM.
      1>Project "C:\Users\Micha\Documents\Search-Engine\Library\Library_32.vcxproj" on node 2 (clean target(s)).
      1>_PrepareForClean:
          Deleting file "Debug\Library.lastbuildstate".
@@ -6,4 +6,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:00.02
+Time Elapsed 00:00:00.03

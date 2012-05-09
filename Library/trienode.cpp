@@ -1,5 +1,5 @@
 #include "trienode.h"
-#include <limits>
+#include <sstream>
 
 using namespace Library;
 
@@ -27,26 +27,23 @@ long trienode::operator[](char c)
 	return links[(int) c];
 }
 
-void trienode::set_link(long idx, long val)
+void trienode::set_link(char idx, long val)
 {
 	links[idx] = val;
 }
 
-inline int long_length(){
-	return 0;//strlen(itoa(LONG_MAX, NULL, 10));
+void trienode::print_node() const
+{
+	//print function modified from oshi cohen code
+	printf("\n #################\n");
+printf(" # serial: %-6i#\n",nodeserialnr);
+printf(" # letter: %-6c#\n",letter);
+printf(" # offset: %-6i#\n",firstoffset);
+printf(" # count:  %-6i#\n",(nrofoccurences <= 0? 0:nrofoccurences));
+printf(" # end?:   %-6i#\n",wordend);
+printf(" #---------------#\n");
+for(int j=0 ; j<256;j++)
+if(links[j]!=-1)
+printf(" #%6c->%-6i #\n",j,links[j]);
+printf(" #################\n");
 }
-/*
-string trienode::serialize(trienode conv){
-/*	string padded_long = "%0(" + long_length() + ")ld";
-	string serial;
-	sprintf(serial, padded_long + padded_long + padded_long + "%c" + padded_long,
-		conv.nodeserialnr,conv.firstoffset,conv.nrofoccurences,conv.letter,conv.wordend);
-	for(int i = 0; i < LINKS_LENGTH; ++i){
-		serial += conv.links[i];
-	}
-	return serial;///
-	return string();
-}
-
-trienode trienode::deserialize(string conv){return trienode();}
-*/
