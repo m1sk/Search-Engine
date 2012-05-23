@@ -155,7 +155,7 @@ namespace Library {
 	}
 
 	// _mkdir
-	static int createDirectory(string path)
+	static long createDirectory(string path)
 	{
 		// NULL == create directory with a default security descriptor
 		return CreateDirectoryA(path.c_str(),NULL);
@@ -181,7 +181,7 @@ namespace Library {
 	}
 
 	// move file from sourceFile to destDirectory
-	static int moveFileToDirectory(string sourceFile , string destDirectory)
+	static long moveFileToDirectory(string sourceFile , string destDirectory)
 	{
 		destDirectory.append("\\");
 		string fileName = getFileName(sourceFile);
@@ -191,7 +191,7 @@ namespace Library {
 	}
 
 	// copy file from sourceFile to destDirectory
-	static int copyFileToDirectory(string sourceFile , string destDirectory, bool overwriteFlag)
+	static long copyFileToDirectory(string sourceFile , string destDirectory, bool overwriteFlag)
 	{
 		destDirectory.append("\\");
 		string fileName = getFileName(sourceFile);
@@ -200,7 +200,7 @@ namespace Library {
 		return CopyFileA(sourceFile.c_str(),destDirectory.c_str(),overwriteFlag);
 	}
 
-	static int transferFileToDirectory(char mode, string sourceFile , string destDirectory, bool overwriteFlag = true)
+	static long transferFileToDirectory(char mode, string sourceFile , string destDirectory, bool overwriteFlag = true)
 	{
 		if(mode == 'c' || mode == 'C'){
 			return copyFileToDirectory(sourceFile,destDirectory,overwriteFlag);

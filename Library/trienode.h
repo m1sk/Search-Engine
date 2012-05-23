@@ -6,7 +6,7 @@ using namespace std;
 namespace Library {
 	struct trienode {
 	// A trienode is a node in a trie tree
-		static const int LINKS_LENGTH = 256;
+		static const long LINKS_LENGTH = 256;
 		static const long NULL_LINK = -1;
 
 		// The last serial number assigned

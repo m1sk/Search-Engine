@@ -1,9 +1,22 @@
 #include "triedoc.h"
+#include "searchutils.h"
 #include <sstream>
 #include <fstream>
 #include <algorithm>
 #include <stdio.h>
 #include <regex>
+#include <exception>
+
+class DocExistsException: exception
+{
+public:
+	DocExistsException()
+		: exception() {}
+	DocExistsException(string s)
+		: exception(s.c_str()) {}
+	DocExistsException(const char* const & s)
+		: exception(s) {}
+};
 
 using namespace Library;
 using namespace std::tr1;
@@ -26,7 +39,13 @@ triedoc::triedoc(string site,string source, char mode)
 {
 	trienodesarray.push_back(trierootnode);
 	if (source != "") {
+		try {
 		putdoc(site, source, mode);
+		} 
+		catch (DocExistsException e)
+		{
+
+		}
 	}
 	else {
 		docname = "";
@@ -43,6 +62,9 @@ triedoc::triedoc(const triedoc& other)
 void triedoc::putdoc(string site,string src,char mode){
 	string dest = doc_dir(site,src);
 	string fullsrc = makeFullPath(src);
+	docname = getFilePrefix(getFileName(src));
+	docext  = getFileSuffix(getFileName(src));
+
 	if(createDirectory(dest) != 0) // File doesn't exist
 	{
 		transferFileToDirectory(mode,fullsrc,dest);
@@ -58,11 +80,14 @@ void triedoc::putdoc(string site,string src,char mode){
 			file.close();
 		}
 	}
-	else
-		throw exception(("Was unable to add document " + src + " to the search site." + site
-		+ "\nDoes it already exist there?").c_str());
-	docname = getFilePrefix(getFileName(src));
-	docext  = getFileSuffix(getFileName(src));
+	else if(GetLastError() == ERROR_PATH_NOT_FOUND) // Directory does not exist
+	{
+		throw exception(("Was unable to add document " + src + " since the source directory does not exist").c_str());
+	}
+	else // Directory exists
+	{
+		throw DocExistsException(("Was unable to add document " + src + " to the site " + site + " since it already exists there").c_str());
+	}
 }
 
 void triedoc::getdoc(string site,string dest){
@@ -132,15 +157,16 @@ void triedoc::idx(string site)
 	ifstream fin;
 	fin.open(filePath);
 	regex rgx("[-a-zA-Z0-9]+"); // Represents all sequences of alphanumeric characters and hyphen
-	cmatch res;
 	vector<string> words;
-	int pos;
+	long pos;
+	long lo=0; 
 	do
 	{
-		pos = (int) fin.tellg();
+		pos = (long) fin.tellg();
 		getline(fin,next);
 		// Debugging
 		//cerr << next << endl;
+		//cerr << "Offset: " << lo << endl;
 		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end; it != it_end; ++it )
 		{
 			if((count (stopWords.begin(), stopWords.end(), (*it)[0]) == 0)
@@ -148,14 +174,16 @@ void triedoc::idx(string site)
 			{
 				// Debugging
 				//cerr << "\t" << (*it)[0] << " at position " << it->position() << endl;
-				add_node((*it)[0], it->position());
+				add_node((*it)[0], lo + it->position());
 			}
 		}
+		lo += next.length();
 	}while(!fin.eof() && fin.good());
 	if(!fin.eof())
 		throw exception(
 			("Error reading the contents of the file " + filePath).c_str());
 	fin.close();
+	flush(site);
 // Debugging
 //	cerr<<"Node Array Size" << trienodesarray.size();
 }
@@ -172,7 +200,7 @@ void triedoc::flush(string site)
 	vector<trienode>::const_iterator i = trienodesarray.begin();
 	do
 	{
-		for(int j = 0; (j < 10) && (i < trienodesarray.end()); ++j, ++i)
+		for(long j = 0; (j < 10) && (i < trienodesarray.end()); ++j, ++i)
 			triebuf.buffer[j] = *i;
 		triebuf.write();
 	}while(i < trienodesarray.end());
@@ -194,12 +222,12 @@ void triedoc::printWords()
 	printWords(trierootnode.nodeserialnr, "");
 }
 
-void triedoc::printWords(int idx, string str)
+void triedoc::printWords(long idx, string str)
 {
-	int node = get_node(idx);
+	long node = get_node(idx);
 	if (idx != trierootnode.nodeserialnr)
 		str += trienodesarray[node].letter;
-	for(int i = 0; i < trienode::LINKS_LENGTH; ++i)
+	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 	{
 		if(trienodesarray[node].links[i] != trienode::NULL_LINK)
 		{
@@ -214,7 +242,7 @@ void triedoc::printWords(int idx, string str)
 }
 
 
-int triedoc::get_node(int serial)
+long triedoc::get_node(long serial)
 {
 	for(vector<trienode>::iterator node = trienodesarray.begin();node!=trienodesarray.end();++node)
 	{
@@ -226,8 +254,8 @@ int triedoc::get_node(int serial)
 
 void triedoc::add_node(string word, long offset)
 {
-	int index = trierootnode.nodeserialnr;
-	int ptr = get_node(index);
+	long index = trierootnode.nodeserialnr;
+	long ptr = get_node(index);
     for(string::const_iterator chr = word.begin(); chr != word.end(); ++chr)
     {
         // If the next link doesn't exist, create it
@@ -237,10 +265,73 @@ void triedoc::add_node(string word, long offset)
 			trienodesarray[ptr].set_link(*chr, trienode::lastserialnr);
         }
         // Update data
-        ++(trienodesarray[ptr].nrofoccurences);
         index = trienodesarray[ptr][*chr];
 		ptr = get_node(index);
     }
+	++(trienodesarray[ptr].nrofoccurences);
 	trienodesarray[ptr].wordend = true;
+}
+
+string triedoc::lineWithOffset(string path,long offset)
+{
+	if(offset < 0) return "";
+	string docpath = doc_path(path,docname) + "." + docext;
+	ifstream fin(docpath);
+	string line;
+	long count = 0;
+	do
+	{
+		getline(fin,line);
+		count += line.length();
+		cerr << "Current location: " << count << " line: " << line << endl;
+	}while (count <= offset);
+	cerr << "Current location: " << count << " line: " << line << endl;
+	return line;
+}
+
+string triedoc::expsearch (string path, string expr)
+{
+	expr = "(" + expr + ")";
+	vector<vector<string> > atoms = get_atoms(expr);
+	vector<Occurence> res;
+	res.resize(atoms.size());
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Occurence>(trierootnode, trienodesarray));
+	string sexp = replace_atoms(expr);
+	long loc = shunting_yard(sexp, res);
+
+//	cerr << "Expsearch invoked" << endl;
+//	cerr << expr << " converted to:" << endl;
+//	cerr << sexp << endl;
+//	cerr << "Atom results: " << endl;
+//	for(vector<Occurence>::const_iterator i = res.begin(); i != res.end(); ++i)
+//		cerr << i->value << endl;
+//	 cerr << "Shunting yard says result is: " << loc << endl;
+//	 cerr << "Line including first occurence of searchexp: " << lineWithOffset(path, loc) << endl;
+	return lineWithOffset(path, loc);
+}
+
+long triedoc::expcount (string path, string expr)
+{
+	expr = "(" + expr + ")";
+	vector<vector<string> > atoms = get_atoms(expr);
+	vector<Count> res;
+	res.resize(atoms.size());
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(trierootnode, trienodesarray));
+	string sexp = replace_atoms(expr);
+	long count = shunting_yard(sexp, res);
+	
+//	cerr << "Expcount invoked" << endl;
+//	cerr << expr << " converted to:" << endl;
+//	cerr << sexp << endl;
+//	cerr << "Atom results: " << endl;
+//	for(vector<Count>::const_iterator i = res.begin(); i != res.end(); ++i)
+//		cerr << i->value << endl;
+//	 cerr << "Shunting yard says result is: " << count << endl;
+	return count;
+}
+bool triedoc::is_indexed(string path)
+{
+	ifstream ifile(doc_path(path,docname) + ".trie");
+    return (ifile?true:false);
 }
 

@@ -19,7 +19,7 @@ triebuffer::triebuffer(const triebuffer& other)
 	buffer = new trienode [10];
 	filePath = other.filePath;
 	file = new fstream();
-	for(int i = 0; i < 10; ++i)
+	for(long i = 0; i < 10; ++i)
 		buffer[i] = other.buffer[i];
 }
 
@@ -28,7 +28,7 @@ ios::pos_type triebuffer::get_pos()
 	return (buffer[0].nodeserialnr/10) * 10 * sizeof(trienode);
 }
 
-int triebuffer::get_pos_nr()
+long triebuffer::get_pos_nr()
 {
 	return (buffer[0].nodeserialnr/10) * 10;
 }
@@ -52,7 +52,7 @@ void triebuffer::read(ios::pos_type idx)
 	file->seekg((idx/10)*10);
 	file->read((char*)buffer, 10*(sizeof trienode));
 // Debugging
-//	for(int i = 0; i < 10; ++i)
+//	for(long i = 0; i < 10; ++i)
 //		cerr << "Read: " << buffer[i].nodeserialnr << ' ' << buffer[i].letter << '\n';
 //	cerr << '\n';
 }
@@ -68,16 +68,17 @@ void triebuffer::write()
 
 void triebuffer::open_file(bool append)
 {
-	//fstream(filePath, ios::app).close();
+	fstream(filePath, ios::app).close();
 	file->open(filePath, ios::out | ios::binary | ios::in | (append? ios::app : 0));
 	/*if(file->tellg() / (sizeof trienode) == 0)
 	{
-		for(int i = 0; i < 10; ++i)
+		for(long i = 0; i < 10; ++i)
 			buffer[i] = trienode();
 		write();
 	}/**/
 	if(!file->is_open())
 	{
+		cerr << "errno"<<strerror(errno)<<endl;
 		throw exception(("Couldn't open .trie file " + filePath).c_str());
 	}
 	file->seekp(0);
@@ -96,11 +97,11 @@ void triebuffer::close_file()
 		file->close();
 }
 
-int triebuffer::file_size()
+long triebuffer::file_size()
 {
 	close_file();
 	file->open(filePath, ios::in | ios::binary | ios::ate);
-	int ret = (int)(file->tellg() / sizeof(trienode));
+	long ret = (long)(file->tellg() / sizeof(trienode));
 // Debugging
 //	cerr << "file size: " << file->tellg() << "\nsize of trienode: " << sizeof(trienode)
 //		<< "\nsize of long: " << sizeof(long) << "\nrecord count: " << ret << "\n";

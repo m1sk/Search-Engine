@@ -4,15 +4,12 @@
 #include "stdafx.h"
 #include "triesite.h"
 #include "fileutils.h"
+#include <regex>
 #include <iostream>
 
 using namespace std;
 using namespace Library;
 
-void print(trienode n)
-{
-	cout << n.nodeserialnr << " " << n.letter << " " << endl;
-}
 void start()
 {
 	string path = "temp0";
@@ -29,8 +26,9 @@ void start()
 	site.docidx("a");
 	site.docexists("a")->printNodes();
 }
-int _tmain(int argc, _TCHAR* argv[])
-{
+
+long _tmain(long argc, _TCHAR* argv[])
+{/*
 	try
 	{
 		start();
@@ -61,7 +59,42 @@ int _tmain(int argc, _TCHAR* argv[])
 	buff.close_file();
 //	cout<< buff.buffer[0].letter<<endl;
 	/**/
+	string filePath = "C:\\Users\\Micha\\Desktop\\tempDest\\";
+	vector<string> expr;
+	//expr.push_back("((((One Three Seven Nine) & (elen sila)) | ((lu*) & (annoy))) | (bla fe*))");
+	//expr.push_back("(One)");
+	expr.push_back("R*ga");
+	expr.push_back("shad*");
+	expr.push_back("Ban**t*");
+	triedoc doc(filePath, "file1.txt");
+	cout << "Is indexed ? "<<doc.is_indexed(filePath) ;
+	doc.idx(filePath);
+	cout << "Is indexed ? "<<doc.is_indexed(filePath) ;
+	for(vector<string>::iterator i = expr.begin(); i != expr.end(); ++i)
+	{
+		cout << "Expression: " << *i << endl;
+		cout << "Expsearch invoked" << endl
+			<< "Line including first occurence of searchexp: "  << doc.expsearch(filePath, *i) << endl;;
+		cout << endl;
+		cout << "Expcount invoked" << endl
+			<< "Number of occurences is: " << doc.expcount (filePath, *i) << endl << endl << endl << endl;
+	}
+	/*
+	string input = "((((foo bar va) & (elen sila)) | ((lumenn) & (annoy))) | (bla))";
+	vector<vector<string> > atoms = get_atoms(input);
+	cout << "Input: " << input << endl;
+	long count = 0;
+	for(vector<vector<string> >::const_iterator i = atoms.begin(); i != atoms.end(); ++i)
+	{
+		cout << "Atom #" << count++ << endl;
+		for(vector<string>::const_iterator j = i->begin(); j != i->end(); ++j)
+		{
+			cout << '\t' << *j << endl;
+		}
+		cout << endl;
+	}
+	cout << replace_atoms(input) << endl;
+	cout << shunting_yard(replace_atoms(input)) << endl;
+	/**/
 	return 0;
-
 }
-

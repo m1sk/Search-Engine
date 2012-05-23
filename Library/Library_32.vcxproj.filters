@@ -42,6 +42,9 @@
     <ClInclude Include="..\Library\fileutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="searchutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="stdafx.cpp">

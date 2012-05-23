@@ -140,12 +140,12 @@ namespace Library {
 	* FUNCTION
 	*    printWords
 	* PARAMETERS
-	*	 int    idx - The index of the node
+	*	 long    idx - The index of the node
 	*	 string str - The prefix of the words in the node
 	* MEANING
 	*     Print every word in the node, prefixed by the string
 	**************************************************/
-		void printWords(int idx, string str);
+		void printWords(long idx, string str);
 	/*************************************************
 	* FUNCTION
 	*    getdocname
@@ -153,17 +153,52 @@ namespace Library {
 	*    The triedoc's name
 	**************************************************/
 		string getdocname() const { return docname; }
-
+	/*************************************************
+	* FUNCTION
+	*    expsearch
+	* PARAMETERS
+	*    string path   - The full path to the site 
+	*    string expr - expression to search for in the document
+	* RETURN VALUE
+	*    The first line that contains a match to the expression
+	* SEE ALSO
+	*     searchutils.h
+	**************************************************/
+	    string expsearch (string path, string expr);
+	/*************************************************
+	* FUNCTION
+	*    expcount
+	* PARAMETERS
+	*    string path   - The full path to the site 
+	*    string expr - expression to search for in the document
+	* RETURN VALUE
+	*   The amount of times the search expression can be found in the document
+	* SEE ALSO
+	*     searchutils.h
+	**************************************************/
+		long expcount (string path, string expr);
+	/*************************************************
+	* FUNCTION
+	*    lineWithOffset
+	* PARAMETERS
+	*    string path  - The full path to a file 	
+	*	 long offset  - An offset in the file
+	* RETURN VALUE
+	*   The line in the file that contains the _offset_  character
+	**************************************************/
+		string lineWithOffset(string path,long offset);
+	//If a ".trie" file exists then the file is indexed
+	bool is_indexed(string sitePath);	
 private:
 	/*************************************************
 	* FUNCTION
 	*    get_node
 	* PARAMETERS
-	*    int serial - The serial number to be searched
+	*    long serial - The serial number to be searched
 	* RETURN VALUE
 	*    The index of the node with the serial number passe
 	**************************************************/
-		int get_node(int);
+		long get_node(long);
 	/*************************************************
 	* FUNCTION
 	*    add_node

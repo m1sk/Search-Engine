@@ -50,7 +50,7 @@ namespace Library {
 	* RETURN VALUE
 	*    The current position in the file in trienodes
 	**************************************************/
-		int           get_pos_nr();
+		long           get_pos_nr();
 	/*************************************************
 	* FUNCTION
 	*    get_node
@@ -120,7 +120,7 @@ namespace Library {
 	* RETURN VALUE
 	*    The amount of trienodes in the file
 	**************************************************/
-		int  file_size();
+		long  file_size();
 	/*************************************************
 	* FUNCTION
 	*    destructor

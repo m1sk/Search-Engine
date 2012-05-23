@@ -177,6 +177,57 @@ namespace Library {
 	*	_stopName_ is not a valid stop file
 	**************************************************/
 		void docidx(string docName);
+    /*************************************************
+	* FUNCTION
+	*    listdoc
+	* PARAMETERS
+	*    long  listtype - 0 or 1 or 2 defining a list of what will be returned 
+	*                    0 - all document names
+	*					 1 - only indexed document names
+    *					 2 - only non-indexed document names
+	*                    (default - 0)  
+	*					
+	* RETURN VALUE
+	*    List of the names the document that match the criteria of _listtype_  
+	**************************************************/
+		list<string> listdoc(long listtype = 0);
+	/*************************************************
+	* FUNCTION
+	*    expsearch
+	* PARAMETERS
+	*	 string name - name of doc in doc list to search 
+	*    string exp - A search expression
+	* RETURN VALUE
+	*    Preform expsearch on the triedoc named _name_ with _exp_
+	* THROWS
+	*	Couldn't search  _name_ because there is no document by that name.
+	* SEE ALSO
+	*    triedoc::expsearch()
+	**************************************************/
+		string expsearch (string docName,string exp);
+    /*************************************************
+	* FUNCTION
+	*    expcount
+	* PARAMETERS
+	*	 string name - name of doc in doc list to search 
+	*    string exp - A search expression
+	* RETURN VALUE
+	*    Preform expcount on the triedoc named _name_ with _exp_
+	* THROWS
+	*	Couldn't search  _name_ because there is no document by that name.
+	* SEE ALSO
+	*    triedoc::expcount()
+	**************************************************/
+		long expcount (string docName,string exp);
+	/*************************************************
+	* FUNCTION
+	*    doclookup
+	* PARAMETERS
+	*    string exp - A search expression
+	* RETURN VALUE
+	*    A list of all the documents that match the _exp_
+	**************************************************/
+		list<string> doclookup(string);
 	/*************************************************
 	* FUNCTION
 	*    destructor
