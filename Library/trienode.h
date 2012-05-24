@@ -10,7 +10,7 @@ namespace Library {
 		static const long NULL_LINK = -1;
 
 		// The last serial number assigned
-		static long   lastserialnr;
+		//static long   lastserialnr;
 		// The serial number for the node in the trie tree
 		long          nodeserialnr;
 		// The offset for the first instance of a word in the text file
@@ -41,7 +41,7 @@ namespace Library {
 		**************************************************/
 		trienode(long _firstoffset,
 			long _nrofoccurences, unsigned char _letter,
-			bool _wordend);
+			bool _wordend, long _serialnr);
 		/*************************************************
 		* FUNCTION
 		*    operator[]

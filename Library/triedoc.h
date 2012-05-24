@@ -9,7 +9,7 @@ using namespace std;
 namespace Library {
 	class triedoc {
 	// A triedoc is an abstraction of a document in the search site
-
+		long lastserialnr;
 		// name of the document 
 		string     docname;
 		// extension of the document
@@ -190,15 +190,6 @@ namespace Library {
 	//If a ".trie" file exists then the file is indexed
 	bool is_indexed(string sitePath);	
 private:
-	/*************************************************
-	* FUNCTION
-	*    get_node
-	* PARAMETERS
-	*    long serial - The serial number to be searched
-	* RETURN VALUE
-	*    The index of the node with the serial number passe
-	**************************************************/
-		long get_node(long);
 	/*************************************************
 	* FUNCTION
 	*    add_node

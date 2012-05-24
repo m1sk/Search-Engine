@@ -35,7 +35,7 @@ string doc_path (string site, string source)
 
 triedoc::triedoc(string site,string source, char mode)
 	: triebuf (doc_path(site,source) + ".trie"),
-	trierootnode (), trienodesarray ()
+	trierootnode (), trienodesarray (),lastserialnr(0)
 {
 	trienodesarray.push_back(trierootnode);
 	if (source != "") {
@@ -50,13 +50,14 @@ triedoc::triedoc(string site,string source, char mode)
 	else {
 		docname = "";
 		docext = "";
+		lastserialnr = 0;
 	}
 }
 
 triedoc::triedoc(const triedoc& other)
 	: triebuf (other.triebuf),
 	trierootnode (other.trierootnode), trienodesarray (other.trienodesarray),
-	docname(other.docname), docext(other.docext)
+	docname(other.docname), docext(other.docext), lastserialnr(other.lastserialnr)
 {}
 
 void triedoc::putdoc(string site,string src,char mode){
@@ -123,8 +124,7 @@ void triedoc::del(string site,char type)
 	triebuf = triebuffer("");
 	docname = "";
 	docext="";
-	trienodesarray = vector<trienode>();
-	trierootnode = trienode();
+	lastserialnr =0;
 
 }
 
@@ -224,7 +224,7 @@ void triedoc::printWords()
 
 void triedoc::printWords(long idx, string str)
 {
-	long node = get_node(idx);
+	long node = idx;
 	if (idx != trierootnode.nodeserialnr)
 		str += trienodesarray[node].letter;
 	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
@@ -241,32 +241,21 @@ void triedoc::printWords(long idx, string str)
 //	}
 }
 
-
-long triedoc::get_node(long serial)
-{
-	for(vector<trienode>::iterator node = trienodesarray.begin();node!=trienodesarray.end();++node)
-	{
-		if(node->nodeserialnr==serial)
-			return node - trienodesarray.begin();
-	}
-	return -1;
-}
-
 void triedoc::add_node(string word, long offset)
 {
 	long index = trierootnode.nodeserialnr;
-	long ptr = get_node(index);
+	long ptr = index;
     for(string::const_iterator chr = word.begin(); chr != word.end(); ++chr)
     {
         // If the next link doesn't exist, create it
 		if(trienodesarray[ptr][*chr] == trienode::NULL_LINK)
         {
-            trienodesarray.push_back(trienode(offset,0,*chr, false));
-			trienodesarray[ptr].set_link(*chr, trienode::lastserialnr);
+			trienodesarray.push_back(trienode(offset,0,*chr, false,lastserialnr++));
+			trienodesarray[ptr].set_link(*chr, lastserialnr);
         }
         // Update data
         index = trienodesarray[ptr][*chr];
-		ptr = get_node(index);
+		ptr = index;//chng
     }
 	++(trienodesarray[ptr].nrofoccurences);
 	trienodesarray[ptr].wordend = true;
@@ -283,9 +272,9 @@ string triedoc::lineWithOffset(string path,long offset)
 	{
 		getline(fin,line);
 		count += line.length();
-		cerr << "Current location: " << count << " line: " << line << endl;
+		//cerr << "Current location: " << count << " line: " << line << endl;
 	}while (count <= offset);
-	cerr << "Current location: " << count << " line: " << line << endl;
+	//cerr << "Current location: " << count << " line: " << line << endl;
 	return line;
 }
 
@@ -316,6 +305,8 @@ long triedoc::expcount (string path, string expr)
 	vector<vector<string> > atoms = get_atoms(expr);
 	vector<Count> res;
 	res.resize(atoms.size());
+//	if(trienodesarray[111].letter != 'I')
+//		cerr << "Changed root[73]" << endl;
 	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(trierootnode, trienodesarray));
 	string sexp = replace_atoms(expr);
 	long count = shunting_yard(sexp, res);

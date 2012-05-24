@@ -27,10 +27,9 @@ triesite::triesite(string path, char func, char mode) {
 void triesite::create(string path){
 	doclist.clear();
 	long err = createDirectory(path);
-	if(err == 0){
+	if(err == 0)
 		throw exception(("Unable to create a search site at " + path
 			+ "\nError:" + strerror(errno)).c_str());
-	}
 }
 
 void triesite::mount(string path,char mode){
@@ -61,33 +60,26 @@ triedoc* triesite::docexists(string compname){
 }
 
 void triesite::docupload(string name,char func) {
-	if(docexists(name)==NULL){
+	if(docexists(name)==NULL)
 		doclist.push_back(triedoc(sitename,name,func));
-	}
-	else {
+	else
 		throw exception("Document already exists in search site");
-	}
-
 }
 
 string triesite::docdownload(string name,string path = getCurrentPath()) {
 	path = makeFullPath(path);
 	triedoc* doc = docexists(name);
-	if(doc != NULL){
+	if(doc != NULL)
 		doc->getdoc(sitename,path);
-	}
-	else {
+	else
 		return NULL;
-	}
 	return path;
 }
 
 void triesite::del(char removeType)
 {
 	if(removeType=='P'||removeType=='p')
-	{
 		removeDirectoryWithSubs(sitename);
-	}
 	else if(removeType=='L'||removeType=='l')
 	{}
 	else
@@ -102,10 +94,8 @@ void triesite::docdel(string name,char type)
 {
 	triedoc* targ = docexists(name);
 	if(targ == NULL)
-	{
 		throw exception(("Couldn't delete " + name + " because "
 			"there is no document by that name.").c_str());
-	}
 	else 
 	{
 		targ->del(sitename,type);
@@ -116,9 +106,7 @@ void triesite::docdel(string name,char type)
 void triesite::putstopfl(string stopName)
 {
 	if(getFileSuffix(stopName) !="stop")
-	{
 		throw exception((stopName + " is not a valid stop file").c_str());
-	}
 	string stopSrc = makeFullPath(stopName);
 	copyFileToDirectory(stopSrc,sitename,true);
 	rename(appendPath(sitename,getFileName(stopName)).c_str(),appendPath(sitename,"stop.lst").c_str());
@@ -128,14 +116,10 @@ void triesite::docidx(string docName)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-	{
 		throw exception(("Couldn't index " + docName + " because "
 			"there is no document by the name: ").c_str());
-	}
 	else 
-	{
 		targ->idx(sitename);
-	}
 }
 list<string> triesite::listdoc(long listtype)
 {
@@ -143,12 +127,36 @@ list<string> triesite::listdoc(long listtype)
 	list<triedoc>::iterator iter;
 	for(iter = doclist.begin(); iter != doclist.end(); ++iter)
 	{
-		if(listtype == 0) ret.push_back(iter->getdocname());
-		else if(iter->is_indexed(sitename) && (listtype == 1))
+		if(iter->is_indexed(sitename))
 		{
-			ret.push_back(iter->getdocname());
+			switch(listtype)
+			{
+			case 0:
+				ret.push_back(iter->getdocname() + "**");
+				break;
+			case 1:
+				ret.push_back(iter->getdocname());
+				break;
+			case 2:
+				break;
+			default:
+				throw exception("Invald list type parameter in triesite::listdoc");
+			}
 		}
-		else if(listtype == 2) ret.push_back(iter->getdocname());
+		else
+		{
+			switch(listtype)
+			{
+			case 1:
+				break;
+			case 0:
+			case 2:
+				ret.push_back(iter->getdocname());
+				break;
+			default:
+				throw exception("Invald list type parameter in triesite::listdoc");
+			}
+		}
 	}
 	return ret;
 }
@@ -156,36 +164,29 @@ string triesite::expsearch(string docName,string expr)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-	{
 		throw exception(("Couldn't search " + docName + " because "
 			"there is no document by the name: ").c_str());
-	}
-	else 
-	{
+	else
 		return targ->expsearch(sitename,expr);
-	}
 }
 long triesite::expcount(string docName,string expr)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-	{
 		throw exception(("Couldn't search " + docName + " because "
 			"there is no document by the name: ").c_str());
-	}
-	else 
-	{
+	else
 		return targ->expcount(sitename,expr);
-	}
 }
 list<string> triesite::doclookup(string exp)
 {
 	list<string> ret;
-	list<triedoc>::iterator iter;
-	for(iter = doclist.begin(); iter != doclist.end(); ++iter)
+	list<string>::iterator iter;
+	list<string> indexed = listdoc(1);
+	for(iter = indexed.begin(); iter != indexed.end(); ++iter)
 	{
-		if(expcount(iter->getdocname(),exp) > 0) 
-			ret.push_back(iter->getdocname());
+		if(expcount(*iter,exp) > 0) 
+			ret.push_back(*iter);
 	}
 	return ret;
 }

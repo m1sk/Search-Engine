@@ -22,22 +22,21 @@ namespace Library {
 				rootPath.append("\\");
 		rootPath.append("*");
 
-		list<string> myList;
-		void*  hFind = INVALID_HANDLE_VALUE;
+		list<string> res;
+		void* hFind = INVALID_HANDLE_VALUE;
 		WIN32_FIND_DATA wfd;
 		LPWIN32_FIND_DATAA ffd = (LPWIN32_FIND_DATAA)&wfd;
 		hFind = FindFirstFileA(rootPath.c_str(), ffd);
 
 		if (INVALID_HANDLE_VALUE == hFind) 
-			return myList;
+			return res;
 		do
 		{
 			if (!(ffd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
-				myList.push_back(ffd->cFileName);		
-		}
-		while (FindNextFileA(hFind, ffd) != 0);
+				res.push_back(ffd->cFileName);		
+		} while (FindNextFileA(hFind, ffd) != 0);
 		FindClose(hFind);
-		return myList;
+		return res;
 	}
 
 	// return all sub-directory name in folder
@@ -47,7 +46,7 @@ namespace Library {
 				rootPath.append("\\");
 		rootPath.append("*");
 
-		list<string> result;
+		list<string> res;
 
 		void*  hFind = INVALID_HANDLE_VALUE;
 		WIN32_FIND_DATA wfd;
@@ -56,41 +55,38 @@ namespace Library {
 		hFind = FindFirstFileA(rootPath.c_str(), ffd);
 
 		if (INVALID_HANDLE_VALUE == hFind) 
-			return result;
+			return res;
 
 		do
 		{
 			if (ffd->dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)
-				result.push_back(ffd->cFileName);		
-		}
-		while (FindNextFileA(hFind, ffd) != 0);
-		if(result.front().compare(".")==0)
-			result.pop_front(); // remove '.' 
-		if(result.front().compare("..")==0)
-			result.pop_front(); // remove '..'
-		return result;
+				res.push_back(ffd->cFileName);		
+		} while (FindNextFileA(hFind, ffd) != 0);
+		res.remove(".");
+		res.remove("..");
+		FindClose(hFind);
+		return res;
 	}
 	static void removeDirectory(string dirName)
 	{
-		//remove(dirName.c_str());
+		errno = 0;
+		dirName += "\\";
 		RemoveDirectoryA(dirName.c_str());
 		if(errno != 0)
+		{
+			cerr << "Error deleting " << dirName << ": " << strerror(errno) << endl;
 			throw exception(strerror(errno));
+		}
 	}
 	static void removeDirectoryWithSubs(string dirPath)
 	{
 		list<string> files = getFileNameList(dirPath);
 		list<string>::iterator it = files.begin();
-		for(it =files.begin(); it!=files.end();it++ )
-		{
+		for(it = files.begin(); it!=files.end();it++)
 			remove((dirPath+"\\"+*it).c_str());
-		}
 		list<string> directories = getSubDirectoryNameList(dirPath);
-		 it = directories.begin();
-		for(it =directories.begin(); it!=directories.end();it++ )
-		{
+		for(it = directories.begin(); it != directories.end(); it++)
 			removeDirectoryWithSubs(dirPath+"\\"+(*it));
-		}
 		removeDirectory(dirPath.c_str());
 	}
 	// print all string element from list<string>

@@ -3,7 +3,7 @@
 
 using namespace Library;
 
-long trienode::lastserialnr = 0;
+//long trienode::lastserialnr = 0;
 
 trienode::trienode()
 	: nodeserialnr(0),
@@ -14,8 +14,8 @@ trienode::trienode()
 
 trienode::trienode(long _firstoffset,
 	long _nrofoccurences, unsigned char _letter,
-	bool _wordend)
-	: nodeserialnr(++lastserialnr),
+	bool _wordend,long serialnr)
+	: nodeserialnr(serialnr),
 	firstoffset(_firstoffset),
 	nrofoccurences(_nrofoccurences),
 	letter(_letter),

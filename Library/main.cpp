@@ -24,11 +24,22 @@ void start()
 		cout<<"doc \"c.txt\" exists"<<endl;
 
 	site.docidx("a");
-	site.docexists("a")->printNodes();
+	site.docidx("b");
+//	site.docexists("a")->printNodes();
+	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
+	cout << "Search b: " << site.expcount("b","*") << endl;
+	for(int i = 0; i<=2; ++i)
+	{
+		cout << "Listdoc of type " << i << endl;
+		list<string> res = site.listdoc(i); 
+		for(list<string>::const_iterator it = res.begin(); it != res.end();it ++)
+			cout << *it << endl;
+		cout << "-------------------" << endl << endl;
+	}
 }
 
 long _tmain(long argc, _TCHAR* argv[])
-{/*
+{
 	try
 	{
 		start();
@@ -38,7 +49,7 @@ long _tmain(long argc, _TCHAR* argv[])
 		cerr << e.what() << endl;
 	}
 	system("pause");
-	removeDirectoryWithSubs(makeFullPath("temp0"));
+ 	removeDirectoryWithSubs(makeFullPath("temp0"));
 
 	/*
 	triesite site;
@@ -59,13 +70,14 @@ long _tmain(long argc, _TCHAR* argv[])
 	buff.close_file();
 //	cout<< buff.buffer[0].letter<<endl;
 	/**/
+	/*
 	string filePath = "C:\\Users\\Micha\\Desktop\\tempDest\\";
 	vector<string> expr;
 	//expr.push_back("((((One Three Seven Nine) & (elen sila)) | ((lu*) & (annoy))) | (bla fe*))");
 	//expr.push_back("(One)");
 	expr.push_back("R*ga");
 	expr.push_back("shad*");
-	expr.push_back("Ban**t*");
+	expr.push_back("*");
 	triedoc doc(filePath, "file1.txt");
 	cout << "Is indexed ? "<<doc.is_indexed(filePath) ;
 	doc.idx(filePath);

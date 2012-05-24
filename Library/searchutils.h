@@ -27,8 +27,8 @@ namespace Library {
 		vector<trienode> arr;
 		WordSearcher();
 	public:
-		WordSearcher(trienode root, vector<trienode> arr)
-			: root(root), arr(arr)
+		WordSearcher(trienode _root, vector<trienode> _arr)
+			: root(_root), arr(_arr)
 		{}
 		long operator()(string word) { return letters(word, root.nodeserialnr);}
 		T letters(string word, long node);
@@ -98,8 +98,8 @@ namespace Library {
 		vector<trienode> arr;
 		AtomSearcher();
 	public:
-		AtomSearcher(trienode root, vector<trienode> arr)
-			: root(root), arr(arr)
+		AtomSearcher(trienode _root, vector<trienode> _arr)
+			: root(_root), arr(_arr)
 		{}
 		long operator()(vector<string> expr);
 	};
