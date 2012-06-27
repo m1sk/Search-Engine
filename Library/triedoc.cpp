@@ -135,22 +135,8 @@ bool is_stop(string word, vector<string> stop)
 
 void triedoc::idx(string site)
 {
-	string stopPath = site + '\\' + docname + '\\' + docname + ".stop";
-	ifstream stopfin;
 	string next;
-	vector<string>stopWords;
-	stopfin.open(stopPath);
-	do
-	{
-		getline(stopfin,next);
-		stopWords.push_back(next);
-		//parse out words and add
-		//add_node()
-	}while(!stopfin.eof() && stopfin.good());
-	if(!stopfin.eof())
-		throw exception(
-			("Error reading the contents of the file " + stopPath).c_str());
-	stopfin.close();
+	vector<string> stopWords = this->stopWords(site);
 
 	string filePath = site + '\\' + docname + '\\' + docname + '.' + docext;
 	
@@ -325,4 +311,62 @@ bool triedoc::is_indexed(string path)
 	ifstream ifile(doc_path(path,docname) + ".trie");
     return (ifile?true:false);
 }
+vector<string> triedoc::stopWords(string path)
+{
+	string stopPath = path;
+	ifstream stopfin;
+	string next;
+	vector<string>stopWords;
+	stopfin.open(stopPath);
+	do
+	{
+		getline(stopfin,next);
+		stopWords.push_back(next);
+		//parse out words and add
+		//add_node()
+	}while(!stopfin.eof() && stopfin.good());
+	if(!stopfin.eof())
+		throw exception(
+			("Error reading the contents of the file " + stopPath).c_str());
+	stopfin.close();
+	return stopWords;
+}
+void triedoc::writeStopWords(string sitePath,vector<string> words)
+{
+	ofstream stopout(sitePath + '\\' + docname + '\\' + docname + ".stop");
+	for(vector<string>::const_iterator i = words.begin();i<words.end();i++)
+	{
+		stopout<<*i<<endl;
+	}
+}
+void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
+{
+	string stoppath = sitepath + '\\' + docname + '\\' + docname + ".stop";
+	switch(code)
+	{
+		case 1:
+			vector<string> stopWords = this->stopWords(stoppath);
+			for(list<string>::const_iterator i = wordList.begin();i != wordList.end();i++)
+			{
+				//add to word list if it doesnt contain it
+			}
+			this->writeStopWords(sitepath,stopWords);
+			break;
+		case 2:
+			vector<string> stopWords = this->stopWords(stoppath);
+			for(list<string>::const_iterator i = wordList.begin();i != wordList.end();i++)
+			{
+				//remove from stop words
+			}
+			this->writeStopWords(sitepath,stopWords);
+			break;
+		case 3:
+			this->writeStopWords(sitepath,this->stopWords(sitepath + "\\stop.lst"));
 
+			break;
+		default:
+
+	}
+}
+void triedoc::docidxupdate(string, list<string>, int)
+{}
