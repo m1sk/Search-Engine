@@ -189,6 +189,39 @@ namespace Library {
 		string lineWithOffset(string path,long offset);
 	//If a ".trie" file exists then the file is indexed
 	bool is_indexed(string sitePath);	
+	/*************************************************
+	* FUNCTION
+	*    docstopupdate
+	* PARAMETERS
+	*	 string       sitepath - Full path of the site.
+	*	 list<string> wordList - A list of words
+	*    int          code     - An integer equal to 1,2, or 3.
+	*    
+	* MEANING
+	*    If _code_ is 1: Add the words in _wordList_ to the stop file
+	*	 If _code_ is 2: Remove all the words in _wordList_ from the stop file
+	*	 If _code_ is 3: Replace current stop file with the site's stop file
+	**************************************************/
+	void docstopupdate(string sitepath, list<string> wordList, int code);
+	/*************************************************
+	* FUNCTION
+	*    docidxupdate
+	* PARAMETERS
+	*	 string       sitepath - Full path of the site.
+	*	 list<string> wordList - A list of words
+	*    int          code     - An integer equal to 1 or 2.
+	*    
+	* MEANING
+	*    If _code_ is 1: Remove all the words in _wordList_ from the trie tree
+	*                    and add them to the stop file with docstopupdate
+	*	 If _code_ is 2: Add all the words in _wordList_ to the trie tree
+	*                    and remove them from the stop file with docstopupdate
+	* SEE ALSO
+	*    docstopupdate()
+	**************************************************/
+	void docidxupdate(string, list<string>, int);
+
+	static vector<string> stopWords(string path);
 private:
 	/*************************************************
 	* FUNCTION
@@ -201,5 +234,6 @@ private:
 	*    creating them if they don't
 	**************************************************/
 		void add_node(string word, long offset);
+		void writeStopWords(string sitePath,vector<string> words);
 	};
 }
