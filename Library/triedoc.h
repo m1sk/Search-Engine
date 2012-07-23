@@ -5,7 +5,6 @@
 #include"triebuffer.h"
 #include"trienode.h"
 using namespace std;
-
 namespace Library {
 	class triedoc {
 	// A triedoc is an abstraction of a document in the search site

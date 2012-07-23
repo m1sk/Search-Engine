@@ -65,7 +65,7 @@ namespace Library {
 	*    (I.e. requesting for #1234, if it isn't in the buffer,
 	*    updates the buffer to include #1230-#1239)
 	**************************************************/
-		trienode get_node(long idx);
+		trienode& get_node(long idx);
 	/*************************************************
 	* FUNCTION
 	*    read

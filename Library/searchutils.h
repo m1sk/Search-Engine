@@ -22,13 +22,13 @@ namespace Library {
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
 		// root of the trie tree
-		trienode         root;
+		trienode   root;
 		// dynamic array used when creating and searching trietree
-		vector<trienode> arr;
+		triebuffer buf;
 		WordSearcher();
 	public:
-		WordSearcher(trienode _root, vector<trienode> _arr)
-			: root(_root), arr(_arr)
+		WordSearcher(trienode _root,triebuffer _buf)
+			: root(_root), buf(_buf)
 		{}
 		long operator()(string word) { return letters(word, root.nodeserialnr);}
 		T letters(string word, long node);
@@ -38,47 +38,55 @@ namespace Library {
 	template<class T>
 	T WordSearcher<T>::letters(string word, long node)
 	{
+		buf.get_node(node).print_node();
+		cerr << "Expression: " << word << "\n";
+
+		T ret;
+		long nextNode;
 		if(word.length() == 0)
 			return T::MIN();
 		for(unsigned long w = 0;w < word.length();w++)
 		{
 			if(word[w] == '*')
 			{
-				T ret = wildcard(word.substr(w+1,word.length()-1), node);
+				ret = wildcard(word.substr(w+1,word.length()-1), node);
 				if(ret != T::MIN())
 					return ret;
 			}
-			node = arr[node].links[word[w]];
+			node = buf.get_node(node).links[word[w]];
 			if(node == trienode::NULL_LINK)
 				return T::MIN();
 		}
 		// Debugging
-		// cerr << word <<" Last char:" << word[word.length()-1] << endl;
-		/*
-		if((word[word.length()-1] == '*') && ((ret = wildcard(nextNode,word))!= -1))
+		 cerr << word <<" Last char:" << word[word.length()-1] << endl;
+		
+		if((word[word.length()-1] == '*') && ((ret = wildcard(word, nextNode))!= -1))
 			return ret;
 		else
-			nextNode = arr[nextNode].links[word[word.length()-1]];
-			*/
-		if(arr[node].wordend)
-			return (T) arr[node];
+			nextNode = buf.get_node(nextNode).links[word[word.length()-1]];
+		
+		if(buf.get_node(node).wordend)
+			return (T) buf.get_node(node);
 		return T::MIN();
 	}
 
 	template<class T>
 	T WordSearcher<T>::wildcard(string word, long node)
 	{
+		buf.get_node(node).print_node();
+		cerr << "Expression: " << word << "\n";
+
 		long link = trienode::NULL_LINK;
 		T comp;
 		if(word != "")
 			comp = this->letters(word, node);
 		for(long i = 0; i <trienode::LINKS_LENGTH;i++  )
 		{
-			link = arr[node].links[i]; 
+			link = buf.get_node(node).links[i]; 
 			if(link != trienode::NULL_LINK)
 			{
-				if(arr[link].wordend && (word==""))
-					comp = comp + T(arr[link]);
+				if(buf.get_node(link).wordend && (word==""))
+					comp = comp + T(buf.get_node(link));
 				comp = comp + wildcard(word, link);
 
 			}
@@ -93,13 +101,13 @@ namespace Library {
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
 		// root of the trie tree
-		trienode         root;
+		trienode   root;
 		// dynamic array used when creating and searching trietree
-		vector<trienode> arr;
+		triebuffer buf;
 		AtomSearcher();
 	public:
-		AtomSearcher(trienode _root, vector<trienode> _arr)
-			: root(_root), arr(_arr)
+		AtomSearcher(trienode _root, triebuffer _buf)
+			: root(_root), buf(_buf)
 		{}
 		long operator()(vector<string> expr);
 	};
@@ -109,7 +117,7 @@ namespace Library {
 	{
 		vector<T> values;
 		values.resize(expr.size());
-		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(root, arr));
+		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(root, buf));
 		T comp;
 		for(vector<T>::iterator i = values.begin(); i != values.end(); ++i)
 			comp = comp + *i;

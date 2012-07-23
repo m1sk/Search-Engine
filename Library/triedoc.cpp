@@ -212,16 +212,16 @@ void triedoc::printWords(long idx, string str)
 {
 	long node = idx;
 	if (idx != trierootnode.nodeserialnr)
-		str += trienodesarray[node].letter;
+		str += triebuf.get_node(node).letter;
 	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 	{
-		if(trienodesarray[node].links[i] != trienode::NULL_LINK)
+		if(triebuf.get_node(node).links[i] != trienode::NULL_LINK)
 		{
-			printWords(trienodesarray[node].links[i], str);
+			printWords(triebuf.get_node(node).links[i], str);
 		}
 	}
 // Debugging
-//	if(trienodesarray[node].wordend)
+//	if(triebuf.get_node(node).wordend)
 //	{
 //		cout << str << endl;
 //	}
@@ -270,7 +270,7 @@ string triedoc::expsearch (string path, string expr)
 	vector<vector<string> > atoms = get_atoms(expr);
 	vector<Occurence> res;
 	res.resize(atoms.size());
-	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Occurence>(trierootnode, trienodesarray));
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Occurence>(trierootnode, triebuf));
 	string sexp = replace_atoms(expr);
 	long loc = shunting_yard(sexp, res);
 
@@ -291,9 +291,7 @@ long triedoc::expcount (string path, string expr)
 	vector<vector<string> > atoms = get_atoms(expr);
 	vector<Count> res;
 	res.resize(atoms.size());
-//	if(trienodesarray[111].letter != 'I')
-//		cerr << "Changed root[73]" << endl;
-	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(trierootnode, trienodesarray));
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(trierootnode, triebuf));
 	string sexp = replace_atoms(expr);
 	long count = shunting_yard(sexp, res);
 	
@@ -318,6 +316,10 @@ vector<string> triedoc::stopWords(string path)
 	string next;
 	vector<string>stopWords;
 	stopfin.open(stopPath);
+	if(!stopfin.is_open())
+	{
+		return stopWords;
+	}
 	do
 	{
 		getline(stopfin,next);
@@ -345,6 +347,7 @@ void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
 	switch(code)
 	{
 		case 1:
+			{
 			vector<string> stopWords = this->stopWords(stoppath);
 			for(list<string>::const_iterator i = wordList.begin();i != wordList.end();i++)
 			{
@@ -352,7 +355,9 @@ void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
 			}
 			this->writeStopWords(sitepath,stopWords);
 			break;
+			}
 		case 2:
+			{
 			vector<string> stopWords = this->stopWords(stoppath);
 			for(list<string>::const_iterator i = wordList.begin();i != wordList.end();i++)
 			{
@@ -360,12 +365,11 @@ void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
 			}
 			this->writeStopWords(sitepath,stopWords);
 			break;
+			}
 		case 3:
 			this->writeStopWords(sitepath,this->stopWords(sitepath + "\\stop.lst"));
 
 			break;
-		default:
-
 	}
 }
 void triedoc::docidxupdate(string, list<string>, int)
