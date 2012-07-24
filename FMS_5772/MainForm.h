@@ -221,16 +221,29 @@ private: System::Void MainForm_Load(System::Object^  sender, System::EventArgs^ 
 		 }
 private: System::Void btnLogin_Click(System::Object^  sender, System::EventArgs^  e) {
 			 this->maintain->Visible = admin = 
-				 ((this->txtUser->Text == "Bob") && (this->txtPass->Text == "foobar"));
+				 ((this->txtUser->Text == "admin") && (this->txtPass->Text == "system"));
 		 }
 private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
+			 try{
 			site.mount((const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer());
+			 }
+			 catch(exception e)
+			 {
+				 MessageBox::Show(gcnew String(e.what()));
+			 }
+			list<string> docs = site.listdoc(0);
 			 this->query->Visible = true;
 			 this->button1->Visible = false;
 			 this->button2->Visible = true;
 		 }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
+			 try{
 			 site.unmount();
+			  }
+			 catch(exception e)
+			 {
+				 MessageBox::Show(gcnew String(e.what()));
+			 }
 			 this->query->Visible = false;
 			 this->button1->Visible = true;
 			 this->button2->Visible = false;
