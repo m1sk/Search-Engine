@@ -172,6 +172,8 @@ list<string> triesite::listdoc(long listtype)
 			case 1:
 				break;
 			case 0:
+				ret.push_back(iter->getdocname());
+				break;
 			case 2:
 				ret.push_back(iter->getdocname());
 				break;

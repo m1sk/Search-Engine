@@ -191,6 +191,7 @@ private: System::Void QueryForm_Load(System::Object^  sender, System::EventArgs^
 		 }
 
 private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs^  e) {
+			 try{
 			 stringstream conv;
 			 this->dgvResults->Visible = true;
 			 if(this->rbQuery->Checked) {
@@ -206,7 +207,7 @@ private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs
 										site.expcount(*match,query_exp)));
 					count += site.expcount(*match, query_exp);
 				}
-				long total = site.listdoc().size();
+				long total = site.listdoc(1).size();
 				conv << count << " out of " << total;
 				this->txtResults->Text = gcnew String(conv.str().c_str());
 			//this->dgvResults->ItemsSource; //= List<Results> for query
@@ -219,6 +220,11 @@ private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs
 			//Summary: docmatched_count " out of " doc_count " documents"
 			//Fields: docname | match_count/match_count%total_matches
 			}
+			  }
+			 catch(exception e)
+			 {
+				 MessageBox::Show(gcnew String(e.what()));
+			 }
 		}
 };
 }
