@@ -25,7 +25,7 @@ void start()
 
 	site.docidx("a");
 	site.docidx("b");
-	site.docexists("a")->printNodes();
+//	site.docexists("a")->printNodes();
 	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
 	cout << "Search b: " << site.expcount("b","*") << endl;
 	for(int i = 0; i<=2; ++i)

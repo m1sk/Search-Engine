@@ -6,11 +6,11 @@ using namespace Library;
 //long trienode::lastserialnr = 0;
 
 trienode::trienode()
-	: nodeserialnr(0),
-	firstoffset(0),
-	letter('\0'),
+	: nodeserialnr(-1),
+	firstoffset(-1),
+	letter(0xFF),
 	wordend(false)
-{for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = NULL_LINK;}
+{for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = INVALID_NODE;}
 
 trienode::trienode(long _firstoffset,
 	long _nrofoccurences, unsigned char _letter,
@@ -20,7 +20,7 @@ trienode::trienode(long _firstoffset,
 	nrofoccurences(_nrofoccurences),
 	letter(_letter),
 	wordend(_wordend)
-{for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = NULL_LINK;}
+{for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = INVALID_NODE;}
 
 long trienode::operator[](char c)
 {

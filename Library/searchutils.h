@@ -21,16 +21,12 @@ namespace Library {
 	class WordSearcher
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
-		// root of the trie tree
-		trienode   root;
 		// dynamic array used when creating and searching trietree
 		triebuffer buf;
 		WordSearcher();
 	public:
-		WordSearcher(trienode _root,triebuffer _buf)
-			: root(_root), buf(_buf)
-		{}
-		long operator()(string word) { return letters(word, root.nodeserialnr);}
+		WordSearcher(triebuffer _buf) : buf(_buf)	{}
+		long operator()(string word) { return letters(word, 0);}
 		T letters(string word, long node);
 		T wildcard(string word, long node);
 	};
@@ -54,7 +50,7 @@ namespace Library {
 					return ret;
 			}
 			node = buf.get_node(node).links[word[w]];
-			if(node == trienode::NULL_LINK)
+			if(node == trienode::INVALID_NODE)
 				return T::MIN();
 		}
 		// Debugging
@@ -76,14 +72,14 @@ namespace Library {
 		buf.get_node(node).print_node();
 		cerr << "Expression: " << word << "\n";
 
-		long link = trienode::NULL_LINK;
+		long link = trienode::INVALID_NODE;
 		T comp;
 		if(word != "")
 			comp = this->letters(word, node);
 		for(long i = 0; i <trienode::LINKS_LENGTH;i++  )
 		{
 			link = buf.get_node(node).links[i]; 
-			if(link != trienode::NULL_LINK)
+			if(link != trienode::INVALID_NODE)
 			{
 				if(buf.get_node(link).wordend && (word==""))
 					comp = comp + T(buf.get_node(link));
@@ -100,15 +96,11 @@ namespace Library {
 	class AtomSearcher
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
-		// root of the trie tree
-		trienode   root;
 		// dynamic array used when creating and searching trietree
 		triebuffer buf;
 		AtomSearcher();
 	public:
-		AtomSearcher(trienode _root, triebuffer _buf)
-			: root(_root), buf(_buf)
-		{}
+		AtomSearcher(triebuffer _buf) : buf(_buf) {}
 		long operator()(vector<string> expr);
 	};
 
@@ -117,7 +109,7 @@ namespace Library {
 	{
 		vector<T> values;
 		values.resize(expr.size());
-		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(root, buf));
+		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(buf));
 		T comp;
 		for(vector<T>::iterator i = values.begin(); i != values.end(); ++i)
 			comp = comp + *i;

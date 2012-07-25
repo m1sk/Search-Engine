@@ -13,12 +13,15 @@ namespace Library {
 		string     docname;
 		// extension of the document
 		string     docext;
-		// root of the trie tree
-		trienode   trierootnode;
 		// buffer containing current trienode
 		triebuffer triebuf;
-		// dynamic array used when creating and searching trietree
-		vector<trienode> trienodesarray;
+		// root of the trie tree
+		// Unused since it's triebuf.get_node(0)
+		//trienode   trierootnode;
+		// dynamic array used when creating and searching the trie
+		// Unused since all accesses to trie are done through triebuf
+		// anyway
+		//vector<trienode> trienodesarray;
 	public:
 	/*************************************************
 	* FUNCTION
@@ -131,20 +134,15 @@ namespace Library {
 	/*************************************************
 	* FUNCTION
 	*    printWords
-	* MEANING
-	*     Print every word in the trie
-	**************************************************/
-		void printWords();
-	/*************************************************
-	* FUNCTION
-	*    printWords
 	* PARAMETERS
 	*	 long    idx - The index of the node
 	*	 string str - The prefix of the words in the node
 	* MEANING
 	*     Print every word in the node, prefixed by the string
+	* DEFAULT
+	*     Print every word in the trie
 	**************************************************/
-		void printWords(long idx, string str);
+		void printWords(long idx = 0, string str = "");
 	/*************************************************
 	* FUNCTION
 	*    getdocname

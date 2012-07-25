@@ -34,20 +34,15 @@ string doc_path (string site, string source)
 }
 
 triedoc::triedoc(string site,string source, char mode)
-	: triebuf (doc_path(site,source) + ".trie"),
-	trierootnode (), trienodesarray (),lastserialnr(0)
+	: triebuf (doc_path(site,source) + ".trie"), lastserialnr(0)
 {
-	trienodesarray.push_back(trierootnode);
+	triebuf.get_node(0) = trienode();
+	triebuf.get_node(0).nodeserialnr = 0;
 	if (source != "") {
 		try {
 		putdoc(site, source, mode);
-		} 
-		catch (DocExistsException e)
-		{
-
-		}
-	}
-	else {
+		} catch (DocExistsException e) {}
+	} else {
 		docname = "";
 		docext = "";
 		lastserialnr = 0;
@@ -55,9 +50,16 @@ triedoc::triedoc(string site,string source, char mode)
 }
 
 triedoc::triedoc(const triedoc& other)
-	: triebuf (other.triebuf),
-	trierootnode (other.trierootnode), trienodesarray (other.trienodesarray),
-	docname(other.docname), docext(other.docext), lastserialnr(other.lastserialnr)
+	: triebuf (other.triebuf), docname(other.docname),
+	docext(other.docext), lastserialnr(other.lastserialnr)
+/* No work to do, since we assume other is a valid triedoc
+ * Idea for future reference: call assert() here to assert
+ * that: - other.triebuf.get_node(0) is the node with
+ *         nodeserialnr = 0 and letter = 0xFF
+ *       - triebuf.filePath is a valid file (exists and is a file)
+ *       - fstream(triebuf.filePath, ios::in | ios::binary | ios::ate).tellg()
+ *         returns an integer multiple of sizeof(trienode)
+ */
 {}
 
 void triedoc::putdoc(string site,string src,char mode){
@@ -156,8 +158,7 @@ void triedoc::idx(string site)
 		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end; it != it_end; ++it )
 		{
 			if((count (stopWords.begin(), stopWords.end(), (*it)[0]) == 0)
-				&& ((*it)[0].matched))
-			{
+				&& ((*it)[0].matched)) {
 				// Debugging
 				//cerr << "\t" << (*it)[0] << " at position " << it->position() << endl;
 				add_node((*it)[0], lo + it->position());
@@ -171,7 +172,7 @@ void triedoc::idx(string site)
 	fin.close();
 	flush(site);
 // Debugging
-//	cerr<<"Node Array Size" << trienodesarray.size();
+	cerr<<"Node Array Size" << triebuf.file_size();
 }
 
 bool comp(trienode a, trienode b)
@@ -182,14 +183,7 @@ bool comp(trienode a, trienode b)
 void triedoc::flush(string site)
 {
 	triebuf.open_file();
-	sort(trienodesarray.begin(), trienodesarray.end(), comp);
-	vector<trienode>::const_iterator i = trienodesarray.begin();
-	do
-	{
-		for(long j = 0; (j < 10) && (i < trienodesarray.end()); ++j, ++i)
-			triebuf.buffer[j] = *i;
-		triebuf.write();
-	}while(i < trienodesarray.end());
+	triebuf.write();
 	triebuf.close_file();
 // Debugging
 //	cerr << "Wrote " << triebuf.file_size() << " trienodes to the file " << triebuf.filePath << endl;
@@ -197,25 +191,19 @@ void triedoc::flush(string site)
 
 void triedoc::printNodes()
 {
-	for(vector<trienode>::const_iterator i = trienodesarray.begin();i<trienodesarray.end();i++)
-	{
-		i->print_node();
-	}
-}
-
-void triedoc::printWords()
-{
-	printWords(trierootnode.nodeserialnr, "");
+	for(long nr = 0; nr < triebuf.file_size(); ++nr)
+		if(triebuf.get_node(nr).nodeserialnr != trienode::INVALID_NODE)
+			triebuf.get_node(nr).print_node();
 }
 
 void triedoc::printWords(long idx, string str)
 {
 	long node = idx;
-	if (idx != trierootnode.nodeserialnr)
+	if (idx != 0)
 		str += triebuf.get_node(node).letter;
 	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 	{
-		if(triebuf.get_node(node).links[i] != trienode::NULL_LINK)
+		if(triebuf.get_node(node).links[i] != trienode::INVALID_NODE)
 		{
 			printWords(triebuf.get_node(node).links[i], str);
 		}
@@ -229,22 +217,23 @@ void triedoc::printWords(long idx, string str)
 
 void triedoc::add_node(string word, long offset)
 {
-	long index = trierootnode.nodeserialnr;
+	long index = 0;
 	long ptr = index;
     for(string::const_iterator chr = word.begin(); chr != word.end(); ++chr)
     {
         // If the next link doesn't exist, create it
-		if(trienodesarray[ptr][*chr] == trienode::NULL_LINK)
+		if(triebuf.get_node(ptr)[*chr] == trienode::INVALID_NODE)
         {
-			trienodesarray.push_back(trienode(offset,0,*chr, false,lastserialnr++));
-			trienodesarray[ptr].set_link(*chr, lastserialnr);
+			trienode tmp(offset,0,*chr, false,lastserialnr++);
+			triebuf.get_node(tmp.nodeserialnr) = tmp;
+			triebuf.get_node(ptr).set_link(*chr, lastserialnr);
         }
         // Update data
-        index = trienodesarray[ptr][*chr];
+        index = triebuf.get_node(ptr)[*chr];
 		ptr = index;//chng
     }
-	++(trienodesarray[ptr].nrofoccurences);
-	trienodesarray[ptr].wordend = true;
+	++(triebuf.get_node(ptr).nrofoccurences);
+	triebuf.get_node(ptr).wordend = true;
 }
 
 string triedoc::lineWithOffset(string path,long offset)
@@ -270,7 +259,7 @@ string triedoc::expsearch (string path, string expr)
 	vector<vector<string> > atoms = get_atoms(expr);
 	vector<Occurence> res;
 	res.resize(atoms.size());
-	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Occurence>(trierootnode, triebuf));
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Occurence>(triebuf));
 	string sexp = replace_atoms(expr);
 	long loc = shunting_yard(sexp, res);
 
@@ -291,7 +280,7 @@ long triedoc::expcount (string path, string expr)
 	vector<vector<string> > atoms = get_atoms(expr);
 	vector<Count> res;
 	res.resize(atoms.size());
-	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(trierootnode, triebuf));
+	transform(atoms.begin(), atoms.end(), res.begin(), AtomSearcher<Count>(triebuf));
 	string sexp = replace_atoms(expr);
 	long count = shunting_yard(sexp, res);
 	

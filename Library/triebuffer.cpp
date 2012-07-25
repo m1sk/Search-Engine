@@ -37,7 +37,7 @@ trienode& triebuffer::get_node(long idx)
 {
 	if((idx/10) != (get_pos_nr()/10))
 	{
-		//write();
+		write();
 		file->seekp((idx/10)*10);
 		read(idx);
 	}
@@ -69,12 +69,12 @@ void triebuffer::open_file(bool append)
 {
 	fstream(filePath, ios::app).close();
 	file->open(filePath, ios::out | ios::binary | ios::in | (append? ios::app : 0));
-	/*if(file->tellg() / (sizeof trienode) == 0)
+	if(file->tellg() / (sizeof trienode) == 0)
 	{
 		for(long i = 0; i < 10; ++i)
 			buffer[i] = trienode();
 		write();
-	}/**/
+	}
 	if(!file->is_open())
 	{
 		cerr << "errno"<<strerror(errno)<<endl;
@@ -113,6 +113,7 @@ triebuffer::~triebuffer()
 {
 	// Debugging
 	// cerr<<"Destructor of "<< this << "\npath: " << filePath;
+	write();
 	delete [] buffer;
 	if(file->is_open())
 		close_file();

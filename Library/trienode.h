@@ -7,7 +7,7 @@ namespace Library {
 	struct trienode {
 	// A trienode is a node in a trie tree
 		static const long LINKS_LENGTH = 256;
-		static const long NULL_LINK = -1;
+		static const long INVALID_NODE = -1;
 
 		// The last serial number assigned
 		//static long   lastserialnr;
@@ -30,7 +30,7 @@ namespace Library {
 		* RETURN VALUE
 		*    A trienode object initialized with default data
 		*    (everything 0, except for the links,
-		*     which are initialized to NULL_LINK)
+		*     which are initialized to INVALID_NODE)
 		**************************************************/
 		trienode();
 		/*************************************************

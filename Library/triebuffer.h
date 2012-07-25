@@ -126,9 +126,6 @@ namespace Library {
 	*    destructor
 	* MEANING
 	*    Closes the file and deallocates the buffer
-	* WARNING
-	*    Doesn't write non-written data to file!
-	*    Write all your data before calling the destructor!
 	**************************************************/
 		~triebuffer();
 	private:
