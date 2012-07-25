@@ -21,26 +21,26 @@ public:
 using namespace Library;
 using namespace std::tr1;
 
-string doc_dir (string site, string source)
+string doc_dir (string path, string source)
 {
 	string name = getFileName(getFilePrefix(source));
-	return site + (*(site.end() - 1) == '\\'? "":"\\") + name + "\\";
+	return path + (*(path.end() - 1) == '\\'? "":"\\") + name + "\\";
 }
 
-string doc_path (string site, string source)
+string doc_path (string path, string source)
 {
 	string name = getFileName(getFilePrefix(source));
-	return doc_dir(site, source) + name;
+	return doc_dir(path, source) + name;
 }
 
-triedoc::triedoc(string site,string source, char mode)
-	: triebuf (doc_path(site,source) + ".trie"), lastserialnr(0)
+triedoc::triedoc(string path,string source, char mode)
+	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(0)
 {
 	triebuf.get_node(0) = trienode();
 	triebuf.get_node(0).nodeserialnr = 0;
 	if (source != "") {
 		try {
-		putdoc(site, source, mode);
+		putdoc(path, source, mode);
 		} catch (DocExistsException e) {}
 	} else {
 		docname = "";
@@ -62,8 +62,8 @@ triedoc::triedoc(const triedoc& other)
  */
 {}
 
-void triedoc::putdoc(string site,string src,char mode){
-	string dest = doc_dir(site,src);
+void triedoc::putdoc(string path,string src,char mode){
+	string dest = doc_dir(path,src);
 	string fullsrc = makeFullPath(src);
 	docname = getFilePrefix(getFileName(src));
 	docext  = getFileSuffix(getFileName(src));
@@ -89,36 +89,36 @@ void triedoc::putdoc(string site,string src,char mode){
 	}
 	else // Directory exists
 	{
-		throw DocExistsException(("Was unable to add document " + src + " to the site " + site + " since it already exists there").c_str());
+		throw DocExistsException(("Was unable to add document " + src + " to the site " + path + " since it already exists there").c_str());
 	}
 }
 
-void triedoc::getdoc(string site,string dest){
+void triedoc::getdoc(string path,string dest){
 	stringstream dests;
 	dests << dest << "\\" << docname;
-	stringstream sites;
-	sites << site << "\\" << docname;
+	stringstream paths;
+	paths << path << "\\" << docname;
 	if(createDirectory(dests.str())==0)
 		throw exception(("Failed to create directory " + dests.str()).c_str());
-	list<string> files = getFileNameList(sites.str());
-	sites << "\\";
+	list<string> files = getFileNameList(paths.str());
+	paths << "\\";
 	for(list<string>::iterator itr = files.begin();itr != files.end(); itr++)
-		copyFileToDirectory(sites.str() + string(*itr), dests.str(), true);
+		copyFileToDirectory(paths.str() + string(*itr), dests.str(), true);
 }
 
-void triedoc::del(string site,char type)
+void triedoc::del(string path,char type)
 {
 	if(type == 'P' || type =='p')
 	{
-		removeDirectoryWithSubs((site+'\\'+docname).c_str());
+		removeDirectoryWithSubs((path+'\\'+docname).c_str());
 	}
 	else if(type == 'L' || type =='l')
 	{
-		if(remove((doc_path(site,docname) + ".trie").c_str()))
+		if(remove((doc_path(path,docname) + ".trie").c_str()))
 		{
 			if(errno!=ENOENT)
 			{
-				throw exception(("Error while logically deleting " + site
+				throw exception(("Error while logically deleting " + path
 					+ ". Error: " + strerror(errno)).c_str());
 			}
 		}
@@ -135,28 +135,41 @@ bool is_stop(string word, vector<string> stop)
     return (count (stop.begin(), stop.end(), word) != 0);
 }
 
-void triedoc::idx(string site)
+void triedoc::idx(string path)
 {
 	string next;
-	vector<string> stopWords = this->stopWords(site);
-
-	string filePath = site + '\\' + docname + '\\' + docname + '.' + docext;
-	
-	ifstream fin;
-	fin.open(filePath);
 	regex rgx("[-a-zA-Z0-9]+"); // Represents all sequences of alphanumeric characters and hyphen
+	vector<string> stopWords;
 	vector<string> words;
+	string stopPath = path + '\\' + docname + '\\' + docname + ".stop";
+	string filePath = path + '\\' + docname + '\\' + docname + '.' + docext;
+
+	ifstream stopfin(stopPath);
+	if(stopfin.is_open()) {
+		do {
+			getline(stopfin,next);
+			stopWords.push_back(next);
+		} while(!stopfin.eof() && stopfin.good());
+		if(!stopfin.eof())
+			throw exception(
+				("Error reading the contents of the file " + stopPath).c_str());
+		stopfin.close();
+	}
+	
+	ifstream fin(filePath);
+	if(!fin.is_open())
+		throw exception(
+			("Error reading the contents of the file " + filePath).c_str());
 	long pos;
-	long lo=0; 
-	do
-	{
+	long lo=0;
+	do {
 		pos = (long) fin.tellg();
 		getline(fin,next);
 		// Debugging
 		//cerr << next << endl;
 		//cerr << "Offset: " << lo << endl;
-		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end; it != it_end; ++it )
-		{
+		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end;
+			it != it_end; ++it)	{
 			if((count (stopWords.begin(), stopWords.end(), (*it)[0]) == 0)
 				&& ((*it)[0].matched)) {
 				// Debugging
@@ -165,14 +178,14 @@ void triedoc::idx(string site)
 			}
 		}
 		lo += next.length();
-	}while(!fin.eof() && fin.good());
+	} while(!fin.eof() && fin.good());
 	if(!fin.eof())
 		throw exception(
 			("Error reading the contents of the file " + filePath).c_str());
 	fin.close();
-	flush(site);
+	flush(path);
 // Debugging
-	cerr<<"Node Array Size" << triebuf.file_size();
+//	cerr<<"Node Array Size" << triebuf.file_size();
 }
 
 bool comp(trienode a, trienode b)
@@ -180,7 +193,7 @@ bool comp(trienode a, trienode b)
 	return a.nodeserialnr < b.nodeserialnr;
 }
 
-void triedoc::flush(string site)
+void triedoc::flush(string path)
 {
 	triebuf.open_file();
 	triebuf.write();
@@ -224,7 +237,7 @@ void triedoc::add_node(string word, long offset)
         // If the next link doesn't exist, create it
 		if(triebuf.get_node(ptr)[*chr] == trienode::INVALID_NODE)
         {
-			trienode tmp(offset,0,*chr, false,lastserialnr++);
+			trienode tmp(offset, 0, *chr, false, lastserialnr++);
 			triebuf.get_node(tmp.nodeserialnr) = tmp;
 			triebuf.get_node(ptr).set_link(*chr, lastserialnr);
         }
@@ -300,15 +313,14 @@ bool triedoc::is_indexed(string path)
 }
 vector<string> triedoc::stopWords(string path)
 {
-	string stopPath = path;
-	ifstream stopfin;
-	string next;
 	vector<string>stopWords;
-	stopfin.open(stopPath);
+	string stopPath = path + '\\' + docname + '\\' + docname + '.' + docext;
+	ifstream stopfin(stopPath);
 	if(!stopfin.is_open())
 	{
 		return stopWords;
 	}
+	string next;
 	do
 	{
 		getline(stopfin,next);
@@ -322,17 +334,17 @@ vector<string> triedoc::stopWords(string path)
 	stopfin.close();
 	return stopWords;
 }
-void triedoc::writeStopWords(string sitePath,vector<string> words)
+void triedoc::writeStopWords(string path,vector<string> words)
 {
-	ofstream stopout(sitePath + '\\' + docname + '\\' + docname + ".stop");
+	ofstream stopout(path + '\\' + docname + '\\' + docname + ".stop");
 	for(vector<string>::const_iterator i = words.begin();i<words.end();i++)
 	{
 		stopout<<*i<<endl;
 	}
 }
-void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
+void triedoc::docstopupdate(string path, list<string> wordList, int code)
 {
-	string stoppath = sitepath + '\\' + docname + '\\' + docname + ".stop";
+	string stoppath = path + '\\' + docname + '\\' + docname + ".stop";
 	switch(code)
 	{
 		case 1:
@@ -342,7 +354,7 @@ void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
 			{
 				//add to word list if it doesnt contain it
 			}
-			this->writeStopWords(sitepath,stopWords);
+			this->writeStopWords(path,stopWords);
 			break;
 			}
 		case 2:
@@ -352,11 +364,11 @@ void triedoc::docstopupdate(string sitepath, list<string> wordList, int code)
 			{
 				//remove from stop words
 			}
-			this->writeStopWords(sitepath,stopWords);
+			this->writeStopWords(path,stopWords);
 			break;
 			}
 		case 3:
-			this->writeStopWords(sitepath,this->stopWords(sitepath + "\\stop.lst"));
+			this->writeStopWords(path,this->stopWords(path + "\\stop.lst"));
 
 			break;
 	}

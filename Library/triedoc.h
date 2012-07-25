@@ -27,7 +27,7 @@ namespace Library {
 	* FUNCTION
 	*    constructor
 	* PARAMETERS
-	*    string site   - The path to the site (If it is not a full path, it is assumed
+	*    string path   - The path to the site (If it is not a full path, it is assumed
 	*                    the directory is in the current directory)
 	*                    (Default: current path)
 	*    string source - The path to the document
@@ -40,7 +40,7 @@ namespace Library {
 	* SEE ALSO
 	*     putdoc()
 	**************************************************/
-		triedoc(string site = "",string name = "", char mode = 'c');
+		triedoc(string path = "",string name = "", char mode = 'c');
 	/*************************************************
 	* FUNCTION
 	*    copy constructor
@@ -70,7 +70,7 @@ namespace Library {
 	*    Was unable to add document _documentPath_ to search site _sitePath_.
 	*	 Does it already exist there?" - if there is an error creating the document folder
 	**************************************************/
-		void putdoc(string site,string src,char mode = 'c');
+		void putdoc(string path,string src,char mode = 'c');
 	/*************************************************
 	* FUNCTION
 	*    getdoc
@@ -84,12 +84,12 @@ namespace Library {
 	*     Failed to create directory _destinationPath_ - if there is an error
 	*                                                    creating the destination folder
 	**************************************************/
-		void getdoc(string site,string dest = getCurrentPath());
+		void getdoc(string path,string dest = getCurrentPath());
 	/*************************************************
 	* FUNCTION
 	*    del
 	* PARAMETERS
-	*	 string site - The path to the site
+	*	 string path - The path to the site
 	*    char   type - Whether to perform logical ('l' or 'L')
 	*					or physical ('p' or 'P') deletion of the document
 	*					(Default: logical)
@@ -101,7 +101,7 @@ namespace Library {
 	*                                                                      deleting the .trie file
 	*                                                                      other than non-existence
 	**************************************************/
-		void del(string site,char type='l');
+		void del(string path,char type='l');
 	/*************************************************
 	* FUNCTION
 	*    idx
@@ -114,16 +114,16 @@ namespace Library {
 	* SEE ALSO
 	*    flush()
 	**************************************************/
-		void idx(string site);
+		void idx(string path);
 	/*************************************************
 	* FUNCTION
 	*    flush
 	* PARAMETERS
-	*	 string site - Full path to the site
+	*	 string path - Full path to the site
 	* MEANING
 	*     Writes the trie to a file named _docname_.trie
 	**************************************************/
-		void flush(string site);
+		void flush(string path);
 	/*************************************************
 	* FUNCTION
 	*    printNodes
@@ -184,13 +184,21 @@ namespace Library {
 	*   The line in the file that contains the _offset_  character
 	**************************************************/
 		string lineWithOffset(string path,long offset);
-	//If a ".trie" file exists then the file is indexed
-	bool is_indexed(string sitePath);	
+	/*************************************************
+	* FUNCTION
+	*    is_indexed
+	* PARAMETERS
+	*    string path  - The full path to the site
+	* RETURN VALUE
+	*   Whether the file is indexed (By checking for
+	*   the existence of a .trie file)
+	**************************************************/
+		bool is_indexed(string path);
 	/*************************************************
 	* FUNCTION
 	*    docstopupdate
 	* PARAMETERS
-	*	 string       sitepath - Full path of the site.
+	*	 string       path     - Full path of the site.
 	*	 list<string> wordList - A list of words
 	*    int          code     - An integer equal to 1,2, or 3.
 	*    
@@ -199,12 +207,12 @@ namespace Library {
 	*	 If _code_ is 2: Remove all the words in _wordList_ from the stop file
 	*	 If _code_ is 3: Replace current stop file with the site's stop file
 	**************************************************/
-	void docstopupdate(string sitepath, list<string> wordList, int code);
+	void docstopupdate(string path, list<string> wordList, int code);
 	/*************************************************
 	* FUNCTION
 	*    docidxupdate
 	* PARAMETERS
-	*	 string       sitepath - Full path of the site.
+	*	 string       path     - Full path of the site.
 	*	 list<string> wordList - A list of words
 	*    int          code     - An integer equal to 1 or 2.
 	*    
@@ -216,9 +224,9 @@ namespace Library {
 	* SEE ALSO
 	*    docstopupdate()
 	**************************************************/
-	void docidxupdate(string, list<string>, int);
+	void docidxupdate(string path, list<string> wordList, int code);
 
-	static vector<string> stopWords(string path);
+	vector<string> stopWords(string path);
 private:
 	/*************************************************
 	* FUNCTION
