@@ -33,14 +33,14 @@ long triebuffer::get_pos_nr()
 	return (buffer[0].nodeserialnr/10) * 10;
 }
 
-trienode triebuffer::get_node(long idx)
+trienode& triebuffer::get_node(long idx)
 {
 	if((idx/10) != (get_pos_nr()/10))
 	{
-		write();
-		file->seekp(idx);
+		//write();
+		file->seekp((idx/10)*10);
+		read(idx);
 	}
-		//update((idx/10)*10);
 
 	return buffer[idx % 10];
 }
@@ -62,8 +62,7 @@ void triebuffer::write()
 	if(!file->is_open())
 		open_file();
 	file->seekp(get_pos());
-	file->write((char*) buffer,10*sizeof(trienode)); 
-//	file->write((char*)buffer, 10*(sizeof trienode));
+	file->write((char*) buffer,10*sizeof(trienode));
 }
 
 void triebuffer::open_file(bool append)

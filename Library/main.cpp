@@ -49,6 +49,8 @@ long _tmain(long argc, _TCHAR* argv[])
 		cerr << e.what() << endl;
 	}
 	system("pause");
+	
+	/*
  	removeDirectoryWithSubs(makeFullPath("temp0"));
 
 	/*
