@@ -42,7 +42,7 @@ namespace Library {
 		cerr << "Expression: " << word << "\n";
 
 		T ret;
-		long nextNode;
+		long nextNode = -1;
 		if(word.length() == 0)
 			return T::MIN();
 		for(unsigned long w = 0;w < word.length();w++)
