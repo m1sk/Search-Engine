@@ -57,6 +57,9 @@ namespace FMS_5772 {
 	private: System::Windows::Forms::RadioButton^  rBtnMove;
 
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  dataGridViewTextBoxColumn1;
+	private: System::Windows::Forms::GroupBox^  groupBox1;
+	private: System::Windows::Forms::RadioButton^  rBtnPhysic;
+	private: System::Windows::Forms::RadioButton^  rBtnLogic;
 
 
 
@@ -83,7 +86,11 @@ namespace FMS_5772 {
 			this->btnDelete = (gcnew System::Windows::Forms::Button());
 			this->rBtnCopy = (gcnew System::Windows::Forms::RadioButton());
 			this->rBtnMove = (gcnew System::Windows::Forms::RadioButton());
+			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
+			this->rBtnLogic = (gcnew System::Windows::Forms::RadioButton());
+			this->rBtnPhysic = (gcnew System::Windows::Forms::RadioButton());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->docListView))->BeginInit();
+			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
 			// 
 			// textBox1
@@ -143,7 +150,7 @@ namespace FMS_5772 {
 			// 
 			// btnDelete
 			// 
-			this->btnDelete->Location = System::Drawing::Point(177, 193);
+			this->btnDelete->Location = System::Drawing::Point(104, 193);
 			this->btnDelete->Name = L"btnDelete";
 			this->btnDelete->Size = System::Drawing::Size(75, 23);
 			this->btnDelete->TabIndex = 5;
@@ -172,13 +179,46 @@ namespace FMS_5772 {
 			this->rBtnMove->TabIndex = 7;
 			this->rBtnMove->Text = L"Move";
 			this->rBtnMove->UseVisualStyleBackColor = true;
-			
+			// 
+			// groupBox1
+			// 
+			this->groupBox1->Controls->Add(this->rBtnPhysic);
+			this->groupBox1->Controls->Add(this->rBtnLogic);
+			this->groupBox1->Location = System::Drawing::Point(185, 192);
+			this->groupBox1->Name = L"groupBox1";
+			this->groupBox1->Size = System::Drawing::Size(130, 36);
+			this->groupBox1->TabIndex = 8;
+			this->groupBox1->TabStop = false;
+			this->groupBox1->Text = L"Delete Type";
+			// 
+			// rBtnLogic
+			// 
+			this->rBtnLogic->AutoSize = true;
+			this->rBtnLogic->Location = System::Drawing::Point(6, 13);
+			this->rBtnLogic->Name = L"rBtnLogic";
+			this->rBtnLogic->Size = System::Drawing::Size(59, 17);
+			this->rBtnLogic->TabIndex = 0;
+			this->rBtnLogic->Text = L"Logical";
+			this->rBtnLogic->UseVisualStyleBackColor = true;
+			// 
+			// rBtnPhysic
+			// 
+			this->rBtnPhysic->AutoSize = true;
+			this->rBtnPhysic->Checked = true;
+			this->rBtnPhysic->Location = System::Drawing::Point(72, 13);
+			this->rBtnPhysic->Name = L"rBtnPhysic";
+			this->rBtnPhysic->Size = System::Drawing::Size(64, 17);
+			this->rBtnPhysic->TabIndex = 1;
+			this->rBtnPhysic->TabStop = true;
+			this->rBtnPhysic->Text = L"Physical";
+			this->rBtnPhysic->UseVisualStyleBackColor = true;
 			// 
 			// MaintForm
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
 			this->ClientSize = System::Drawing::Size(349, 262);
+			this->Controls->Add(this->groupBox1);
 			this->Controls->Add(this->rBtnMove);
 			this->Controls->Add(this->rBtnCopy);
 			this->Controls->Add(this->btnDelete);
@@ -191,6 +231,8 @@ namespace FMS_5772 {
 			this->Text = L"Maintaince";
 			this->Load += gcnew System::EventHandler(this, &MaintForm::MaintForm_Load);
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->docListView))->EndInit();
+			this->groupBox1->ResumeLayout(false);
+			this->groupBox1->PerformLayout();
 			this->ResumeLayout(false);
 			this->PerformLayout();
 
@@ -207,7 +249,6 @@ namespace FMS_5772 {
 					 this->Hide();
 				 } 
 				 list<string>::iterator it = docList.begin();
-				 if( docList.size()>=2)this->textBox1->Text = "More than 2";
 				 this->docListView->Rows->Add(docList.size());
 				 for(unsigned int i = 0; i <  docList.size();i++,it++)
 				 {
@@ -217,7 +258,7 @@ namespace FMS_5772 {
 			 }
 	private: System::Void btnUpload_Click(System::Object^  sender, System::EventArgs^  e) {
 				 try{
-				 site.docupload((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer(),'C');
+				 site.docupload((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer(),(this->rBtnCopy->Checked?'C':'M'));
 				  }
 			 catch(exception e)
 			 {
@@ -235,16 +276,46 @@ namespace FMS_5772 {
 			 }
 		 }
 private: System::Void btnIndex_Click(System::Object^  sender, System::EventArgs^  e) {
-			 string selectedDoc((const char*)Marshal::StringToHGlobalAnsi((String^)this->docListView->SelectedRows[0]->Cells[0]->Value).ToPointer());
-			 if(selectedDoc.at(selectedDoc.length()-1)==selectedDoc.at(selectedDoc.length()-2)=='*')
+			 if(this->docListView->SelectedRows->Count > 0)
 			 {
-				 selectedDoc = selectedDoc.substr(0,selectedDoc.length()-2);
+				 string selectedDoc((const char*)Marshal::StringToHGlobalAnsi((String^)this->docListView->SelectedRows[0]->Cells[0]->Value).ToPointer());
+				 if((selectedDoc.length()>2)&&(selectedDoc.at(selectedDoc.length()-1)=='*')==(selectedDoc.at(selectedDoc.length()-2)=='*'))
+				 {
+					 selectedDoc = selectedDoc.substr(0,selectedDoc.length()-2);
+				 }
+				 try{
+				 site.docidx(selectedDoc);
+				 }catch(exception e)
+			 {
+				 MessageBox::Show(gcnew String(e.what()));
 			 }
-			 site.docidx(selectedDoc);
+			 }
+			 else
+			 {
+				  MessageBox::Show("Please Select A Document!");
+			 }
 		 }
 private: System::Void btnDelete_Click(System::Object^  sender, System::EventArgs^  e) {
+			  if(this->docListView->SelectedRows->Count > 0)
+			 {
+				 string selectedDoc((const char*)Marshal::StringToHGlobalAnsi((String^)this->docListView->SelectedRows[0]->Cells[0]->Value).ToPointer());
+				 if((selectedDoc.length()>2)&&(selectedDoc.at(selectedDoc.length()-1)=='*')==(selectedDoc.at(selectedDoc.length()-2)=='*'))
+				 {
+					 selectedDoc = selectedDoc.substr(0,selectedDoc.length()-2);
+				 }
+				 try{
+					 MessageBox::Show(this->rBtnLogic->Checked?"L":"P");
+				 site.docdel(selectedDoc,(this->rBtnLogic->Checked?'L':'P'));
+				 }catch(exception e)
+			 {
+				 MessageBox::Show(gcnew String(e.what()));
+			 }
+			 }
+			 else
+			 {
+				  MessageBox::Show("Please Select A Document!");
+			 }
 		 }
-
 };
 }
 /* Supports:
