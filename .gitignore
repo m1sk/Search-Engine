@@ -1,0 +1,10 @@
+*.idb
+*.log
+*.ncb
+*.opensdf
+*.pdb
+*.sdf
+*.suo
+ipch/
+*.unsuccessfulbuild
+*.obj
