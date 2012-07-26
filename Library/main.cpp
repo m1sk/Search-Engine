@@ -15,20 +15,23 @@ void start()
 	string path = "temp0";
 	triesite site(path);
 	site.docupload("temp\\a.txt");
+	cerr << "Exited docupload" << endl;
 	site.docupload("temp\\b.txt");
 	site.docupload("temp\\c.txt");
 	site.unmount();
 	site.mount(path);
+	site.mount("");
 	
 	if(site.docexists("c")!=NULL)
 		cout<<"doc \"c.txt\" exists"<<endl;
 
 	site.docidx("a");
+	site.docexists("a")->printWords();
 	site.docidx("b");
 //	site.docexists("a")->printNodes();
 	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
 	cout << "Search b: " << site.expcount("b","*") << endl;
-	for(int i = 0; i<=2; ++i)
+/*	for(int i = 0; i<=2; ++i)
 	{
 		cout << "Listdoc of type " << i << endl;
 		list<string> res = site.listdoc(i); 
@@ -36,6 +39,7 @@ void start()
 			cout << *it << endl;
 		cout << "-------------------" << endl << endl;
 	}
+*/
 }
 
 long _tmain(long argc, _TCHAR* argv[])
