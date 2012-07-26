@@ -87,8 +87,8 @@ namespace FMS_5772 {
 			this->rBtnCopy = (gcnew System::Windows::Forms::RadioButton());
 			this->rBtnMove = (gcnew System::Windows::Forms::RadioButton());
 			this->groupBox1 = (gcnew System::Windows::Forms::GroupBox());
-			this->rBtnLogic = (gcnew System::Windows::Forms::RadioButton());
 			this->rBtnPhysic = (gcnew System::Windows::Forms::RadioButton());
+			this->rBtnLogic = (gcnew System::Windows::Forms::RadioButton());
 			(cli::safe_cast<System::ComponentModel::ISupportInitialize^  >(this->docListView))->BeginInit();
 			this->groupBox1->SuspendLayout();
 			this->SuspendLayout();
@@ -191,16 +191,6 @@ namespace FMS_5772 {
 			this->groupBox1->TabStop = false;
 			this->groupBox1->Text = L"Delete Type";
 			// 
-			// rBtnLogic
-			// 
-			this->rBtnLogic->AutoSize = true;
-			this->rBtnLogic->Location = System::Drawing::Point(6, 13);
-			this->rBtnLogic->Name = L"rBtnLogic";
-			this->rBtnLogic->Size = System::Drawing::Size(59, 17);
-			this->rBtnLogic->TabIndex = 0;
-			this->rBtnLogic->Text = L"Logical";
-			this->rBtnLogic->UseVisualStyleBackColor = true;
-			// 
 			// rBtnPhysic
 			// 
 			this->rBtnPhysic->AutoSize = true;
@@ -212,6 +202,16 @@ namespace FMS_5772 {
 			this->rBtnPhysic->TabStop = true;
 			this->rBtnPhysic->Text = L"Physical";
 			this->rBtnPhysic->UseVisualStyleBackColor = true;
+			// 
+			// rBtnLogic
+			// 
+			this->rBtnLogic->AutoSize = true;
+			this->rBtnLogic->Location = System::Drawing::Point(6, 13);
+			this->rBtnLogic->Name = L"rBtnLogic";
+			this->rBtnLogic->Size = System::Drawing::Size(59, 17);
+			this->rBtnLogic->TabIndex = 0;
+			this->rBtnLogic->Text = L"Logical";
+			this->rBtnLogic->UseVisualStyleBackColor = true;
 			// 
 			// MaintForm
 			// 
@@ -246,7 +246,7 @@ namespace FMS_5772 {
 				 catch(exception e)
 				 {
 					 MessageBox::Show(gcnew String(e.what()));
-					 this->Hide();
+					 this->Close();
 				 } 
 				 list<string>::iterator it = docList.begin();
 				 this->docListView->Rows->Add(docList.size());

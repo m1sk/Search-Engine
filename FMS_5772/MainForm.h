@@ -10,7 +10,7 @@ using namespace Library;
 namespace FMS_5772 {
 	triesite site;
 	bool admin;
-
+	string sitepath;
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -225,6 +225,7 @@ private: System::Void btnLogin_Click(System::Object^  sender, System::EventArgs^
 		 }
 private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
 			 try{
+				 sitepath = (const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer();
 			site.mount((const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer());
 			 }
 			 catch(exception e)
