@@ -35,8 +35,7 @@ long triebuffer::get_block()
 
 trienode& triebuffer::operator[](long idx)
 {
-	if((idx/10) != (get_block()/10))
-	{
+	if((idx/10) != (get_block()/10)) {
 		write();
 		file->seekp((idx/10)*10*(sizeof trienode));
 		read(idx);
@@ -76,8 +75,7 @@ void triebuffer::open_file(bool append)
 {
 	fstream(filePath, ios::app).close(); // Create the file if it doesn't exist
 	file->open(filePath, ios::binary | ios::out | ios::in | (append? ios::app : 0));
-	if(file->tellg() / (sizeof trienode) == 0)
-	{
+	if(file_size() == 0) {
 		for(long i = 0; i < 10; ++i)
 			buffer[i] = trienode();
 		write();
@@ -89,7 +87,7 @@ void triebuffer::open_file(bool append)
 }
 void triebuffer::open_file(string path, bool append)
 {
-	if(!(path == ""))
+	if(path != "")
 		filePath = path;
 	open_file(append);
 }

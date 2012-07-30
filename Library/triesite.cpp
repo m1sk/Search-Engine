@@ -63,7 +63,8 @@ void triesite::docupload(string name,char func) {
 	if(docexists(name)==NULL)
 	{
 		doclist.push_back(triedoc(sitename,name,func));
-		cerr << "Uploaded document" << endl;
+		// Debugging
+		//cerr << "Uploaded document" << endl;
 	}
 	else
 		throw exception("Document already exists in search site");
