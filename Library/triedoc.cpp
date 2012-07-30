@@ -34,10 +34,10 @@ string doc_path (string path, string source)
 }
 
 triedoc::triedoc(string path,string source, char mode)
-	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(0)
+	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(1)
 {
-	triebuf.get_node(0) = trienode();
-	triebuf.get_node(0).nodeserialnr = 0;
+	triebuf[0] = trienode();
+	triebuf[0].nodeserialnr = 0;
 	if (source != "") {
 		try {
 		putdoc(path, source, mode);
@@ -54,7 +54,7 @@ triedoc::triedoc(const triedoc& other)
 	docext(other.docext), lastserialnr(other.lastserialnr)
 /* No work to do, since we assume other is a valid triedoc
  * Idea for future reference: call assert() here to assert
- * that: - other.triebuf.get_node(0) is the node with
+ * that: - other.triebuf[0] is the node with
  *         nodeserialnr = 0 and letter = 0xFF
  *       - triebuf.filePath is a valid file (exists and is a file)
  *       - fstream(triebuf.filePath, ios::in | ios::binary | ios::ate).tellg()
@@ -183,7 +183,6 @@ void triedoc::idx(string path)
 		throw exception(
 			("Error reading the contents of the file " + filePath).c_str());
 	fin.close();
-	flush(path);
 // Debugging
 //	cerr<<"Node Array Size" << triebuf.file_size();
 }
@@ -193,36 +192,27 @@ bool comp(trienode a, trienode b)
 	return a.nodeserialnr < b.nodeserialnr;
 }
 
-void triedoc::flush(string path)
-{
-	triebuf.open_file();
-	triebuf.write();
-	triebuf.close_file();
-// Debugging
-//	cerr << "Wrote " << triebuf.file_size() << " trienodes to the file " << triebuf.filePath << endl;
-}
-
 void triedoc::printNodes()
 {
 	for(long nr = 0; nr < triebuf.file_size(); ++nr)
-		if(triebuf.get_node(nr).nodeserialnr != trienode::INVALID_NODE)
-			triebuf.get_node(nr).print_node();
+		if(triebuf[nr].nodeserialnr != trienode::INVALID_NODE)
+			triebuf[nr].print_node();
 }
 
 void triedoc::printWords(long idx, string str)
 {
 	long node = idx;
 	if (idx != 0)
-		str += triebuf.get_node(node).letter;
+		str += triebuf[node].letter;
 	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 	{
-		if(triebuf.get_node(node).links[i] != trienode::INVALID_NODE)
+		if(triebuf[node].links[i] != trienode::INVALID_NODE)
 		{
-			printWords(triebuf.get_node(node).links[i], str);
+			printWords(triebuf[node].links[i], str);
 		}
 	}
 // Debugging
-//	if(triebuf.get_node(node).wordend)
+//	if(triebuf[node].wordend)
 //	{
 //		cout << str << endl;
 //	}
@@ -235,18 +225,18 @@ void triedoc::add_node(string word, long offset)
     for(string::const_iterator chr = word.begin(); chr != word.end(); ++chr)
     {
         // If the next link doesn't exist, create it
-		if(triebuf.get_node(ptr)[*chr] == trienode::INVALID_NODE)
+		if(triebuf[ptr][*chr] == trienode::INVALID_NODE)
         {
-			trienode tmp(offset, 0, *chr, false, lastserialnr++);
-			triebuf.get_node(tmp.nodeserialnr) = tmp;
-			triebuf.get_node(ptr).set_link(*chr, lastserialnr);
+			trienode tmp(lastserialnr++, offset, 0, *chr, false);
+			triebuf[tmp.nodeserialnr] = tmp;
+			triebuf[ptr][*chr] = lastserialnr;
         }
         // Update data
-        index = triebuf.get_node(ptr)[*chr];
+        index = triebuf[ptr][*chr];
 		ptr = index;//chng
     }
-	++(triebuf.get_node(ptr).nrofoccurences);
-	triebuf.get_node(ptr).wordend = true;
+	++(triebuf[ptr].nrofoccurences);
+	triebuf[ptr].wordend = true;
 }
 
 string triedoc::lineWithOffset(string path,long offset)
@@ -375,3 +365,4 @@ void triedoc::docstopupdate(string path, list<string> wordList, int code)
 }
 void triedoc::docidxupdate(string, list<string>, int)
 {}
+

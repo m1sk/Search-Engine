@@ -16,7 +16,7 @@ namespace Library {
 		// buffer containing current trienode
 		triebuffer triebuf;
 		// root of the trie tree
-		// Unused since it's triebuf.get_node(0)
+		// Unused since it's triebuf[0]
 		//trienode   trierootnode;
 		// dynamic array used when creating and searching the trie
 		// Unused since all accesses to trie are done through triebuf
@@ -123,7 +123,10 @@ namespace Library {
 	* MEANING
 	*     Writes the trie to a file named _docname_.trie
 	**************************************************/
-		void flush(string path);
+		//Unneeded since all calls to triebuffer already
+		//flush the data and the triebuffer destructor
+		//also handles flushing the data
+		//void flush(string path);
 	/*************************************************
 	* FUNCTION
 	*    printNodes
@@ -242,3 +245,4 @@ private:
 		void writeStopWords(string sitePath,vector<string> words);
 	};
 }
+

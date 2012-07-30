@@ -63,7 +63,6 @@ long _tmain(long argc, _TCHAR* argv[])
 	doc.idx(filePath);
 
 	doc.printWords();
-	doc.flush(filePath);
 	//delete &doc;
 	triebuffer buff(filePath+"file1\\file1.trie");
 	buff.open_file(true);
@@ -111,3 +110,4 @@ long _tmain(long argc, _TCHAR* argv[])
 	/**/
 	return 0;
 }
+

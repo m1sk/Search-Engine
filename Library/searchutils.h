@@ -13,9 +13,6 @@ namespace Library {
 	* This library includes common functions involving parsing complex search expressions
 	* 
 	*/
-	//TODO
-	//Convert {Atom,Word}Searcher using templates to use generic Fields
-	//Convert WordSearcher::operator() to parser arbitrary wildcard locations
 
 	template<class T>
 	class WordSearcher
@@ -34,7 +31,7 @@ namespace Library {
 	template<class T>
 	T WordSearcher<T>::letters(string word, long node)
 	{
-		buf.get_node(node).print_node();
+		buf[node].print_node();
 		cerr << "Expression: " << word << "\n";
 
 		T ret;
@@ -49,7 +46,7 @@ namespace Library {
 				if(ret != T::MIN())
 					return ret;
 			}
-			node = buf.get_node(node).links[word[w]];
+			node = buf[node].links[word[w]];
 			if(node == trienode::INVALID_NODE)
 				return T::MIN();
 		}
@@ -59,17 +56,17 @@ namespace Library {
 		if((word[word.length()-1] == '*') && ((ret = wildcard(word, nextNode))!= -1))
 			return ret;
 		else
-			nextNode = buf.get_node(nextNode).links[word[word.length()-1]];
+			nextNode = buf[nextNode].links[word[word.length()-1]];
 		
-		if(buf.get_node(node).wordend)
-			return (T) buf.get_node(node);
+		if(buf[node].wordend)
+			return (T) buf[node];
 		return T::MIN();
 	}
 
 	template<class T>
 	T WordSearcher<T>::wildcard(string word, long node)
 	{
-		buf.get_node(node).print_node();
+		buf[node].print_node();
 		cerr << "Expression: " << word << "\n";
 
 		long link = trienode::INVALID_NODE;
@@ -78,11 +75,11 @@ namespace Library {
 			comp = this->letters(word, node);
 		for(long i = 0; i <trienode::LINKS_LENGTH;i++  )
 		{
-			link = buf.get_node(node).links[i]; 
+			link = buf[node].links[i]; 
 			if(link != trienode::INVALID_NODE)
 			{
-				if(buf.get_node(link).wordend && (word==""))
-					comp = comp + T(buf.get_node(link));
+				if(buf[link].wordend && (word==""))
+					comp = comp + T(buf[link]);
 				comp = comp + wildcard(word, link);
 
 			}
@@ -289,3 +286,4 @@ namespace Library {
 		return var_stack.back();
 	}
 }
+

@@ -195,3 +195,4 @@ list<string> triesite::doclookup(string exp)
 triesite::~triesite(){
 	unmount();
 }
+

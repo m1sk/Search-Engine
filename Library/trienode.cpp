@@ -3,18 +3,9 @@
 
 using namespace Library;
 
-//long trienode::lastserialnr = 0;
-
-trienode::trienode()
-	: nodeserialnr(-1),
-	firstoffset(-1),
-	letter(0xFF),
-	wordend(false)
-{for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = INVALID_NODE;}
-
-trienode::trienode(long _firstoffset,
+trienode::trienode(long serialnr, long _firstoffset,
 	long _nrofoccurences, unsigned char _letter,
-	bool _wordend,long serialnr)
+	bool _wordend)
 	: nodeserialnr(serialnr),
 	firstoffset(_firstoffset),
 	nrofoccurences(_nrofoccurences),
@@ -22,15 +13,7 @@ trienode::trienode(long _firstoffset,
 	wordend(_wordend)
 {for (long i = 0; i < LINKS_LENGTH; ++i) links[i] = INVALID_NODE;}
 
-long trienode::operator[](char c)
-{
-	return links[(long) c];
-}
-
-void trienode::set_link(char idx, long val)
-{
-	links[idx] = val;
-}
+long& trienode::operator[](char c) { return links[(long) c]; }
 
 void trienode::print_node() const
 {

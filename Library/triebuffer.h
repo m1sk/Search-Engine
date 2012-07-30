@@ -46,14 +46,14 @@ namespace Library {
 		ios::pos_type get_pos();
 	/*************************************************
 	* FUNCTION
-	*    get_pos_nr
+	*    get_block
 	* RETURN VALUE
 	*    The current position in the file in trienodes
 	**************************************************/
-		long           get_pos_nr();
+		long get_block();
 	/*************************************************
 	* FUNCTION
-	*    get_node
+	*    operator[]
 	* PATAMETERS
 	*    long idx - The serial number of the node
 	* RETURN VALUE
@@ -65,7 +65,7 @@ namespace Library {
 	*    (I.e. requesting for #1234, if it isn't in the buffer,
 	*    updates the buffer to include #1230-#1239)
 	**************************************************/
-		trienode& get_node(long idx);
+		trienode& operator[](long idx);
 	/*************************************************
 	* FUNCTION
 	*    read
@@ -109,13 +109,6 @@ namespace Library {
 		void open_file(string path,bool append = false);
 	/*************************************************
 	* FUNCTION
-	*    close_file
-	* MEANING
-	*    Closes the file
-	**************************************************/
-		void close_file();
-	/*************************************************
-	* FUNCTION
 	*    file_size
 	* RETURN VALUE
 	*    The amount of trienodes in the file
@@ -134,3 +127,4 @@ namespace Library {
 		              // with any file
 	};
 }
+
