@@ -75,13 +75,13 @@ void triebuffer::open_file(bool append)
 {
 	fstream(filePath, ios::app).close(); // Create the file if it doesn't exist
 	file->open(filePath, ios::binary | ios::out | ios::in | (append? ios::app : 0));
+	if(!file->is_open())
+		throw exception(("Couldn't open .trie file " + filePath).c_str());
 	if(file_size() == 0) {
 		for(long i = 0; i < 10; ++i)
 			buffer[i] = trienode();
 		write();
 	}
-	if(!file->is_open())
-		throw exception(("Couldn't open .trie file " + filePath).c_str());
 	file->seekp(0);
 	file->seekg(0);
 }
