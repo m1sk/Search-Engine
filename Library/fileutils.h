@@ -1,4 +1,5 @@
 #pragma once
+#include "exceptions.h"
 #include <windows.h>
 #include <iostream>
 #include <list>
@@ -73,10 +74,7 @@ namespace Library {
 		dirName += "\\";
 		RemoveDirectoryA(dirName.c_str());
 		if(errno != 0)
-		{
-			cerr << "Error deleting " << dirName << ": " << strerror(errno) << endl;
-			throw exception(strerror(errno));
-		}
+			throw FileException("Error deleting " + dirName);
 	}
 	static void removeDirectoryWithSubs(string dirPath)
 	{

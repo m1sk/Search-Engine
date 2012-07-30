@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "triesite.h"
 #include "fileutils.h"
+#include "exceptions.h"
 #include <regex>
 #include <iostream>
 
@@ -47,10 +48,27 @@ long _tmain(long argc, _TCHAR* argv[])
 	{
 		start();
 	}
-	catch(exception e)
+	catch(Library::DocException& e)
 	{
 		cerr << e.what() << endl;
 	}
+	catch(Library::FileException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::ParseException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::SiteException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::SystemException& e)
+	{
+		cerr << e.what() << endl;
+	}
+
 	cout << "Press any key to delete the triesite, or 'k' to keep it\n";
 	if('k' != cin.get())
  		removeDirectoryWithSubs(makeFullPath("temp0"));

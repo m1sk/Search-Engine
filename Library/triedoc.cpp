@@ -1,22 +1,11 @@
 #include "triedoc.h"
 #include "searchutils.h"
+#include "exceptions.h"
 #include <sstream>
 #include <fstream>
 #include <algorithm>
 #include <stdio.h>
 #include <regex>
-#include <exception>
-
-class DocExistsException: exception
-{
-public:
-	DocExistsException()
-		: exception() {}
-	DocExistsException(string s)
-		: exception(s.c_str()) {}
-	DocExistsException(const char* const & s)
-		: exception(s) {}
-};
 
 using namespace Library;
 using namespace std::tr1;
@@ -100,7 +89,7 @@ void triedoc::getdoc(string path,string dest){
 	stringstream paths;
 	paths << path << "\\" << docname;
 	if(createDirectory(dests.str())==0)
-		throw exception(("Failed to create directory " + dests.str()).c_str());
+		throw SystemException("Failed to create directory " + dests.str());
 	list<string> files = getFileNameList(paths.str());
 	paths << "\\";
 	for(list<string>::iterator itr = files.begin();itr != files.end(); itr++)
@@ -115,14 +104,8 @@ void triedoc::del(string path,char type)
 	}
 	else if(type == 'L' || type =='l')
 	{
-		if(remove((doc_path(path,docname) + ".trie").c_str()))
-		{
-			if(errno!=ENOENT)
-			{
-				throw exception(("Error while logically deleting " + path
-					+ ". Error: " + strerror(errno)).c_str());
-			}
-		}
+		if(remove((doc_path(path,docname) + ".trie").c_str()) && errno != ENOENT)
+			throw FileException("Error while logically deleting " + path);
 	}
 	triebuf = triebuffer("");
 	docname = "";
@@ -146,17 +129,17 @@ void triedoc::idx(string path)
 
 	ifstream stopfin(stopPath);
 	if(!stopfin.is_open())
-		throw exception(("Error opening the file " + stopPath).c_str());
+		throw FileException("Error opening the file " + stopPath);
 	do {
 		getline(stopfin,next);
 		stopWords.push_back(next);
 	} while(!stopfin.eof() && stopfin.good());
 	if(!stopfin.eof())
-		throw exception(("Error reading the contents of the file " + stopPath).c_str());
+		throw FileException("Error reading the contents of the file " + stopPath);
 	
 	ifstream fin(filePath);
 	if(!fin.is_open())
-		throw exception(("Error opening the file " + filePath).c_str());
+		throw FileException("Error opening the file " + filePath);
 	long pos;
 	long lo=0;
 	do {
@@ -171,7 +154,7 @@ void triedoc::idx(string path)
 		lo += next.length();
 	} while(!fin.eof() && fin.good());
 	if(!fin.eof())
-		throw exception(("Error reading the contents of the file " + filePath).c_str());
+		throw FileException("Error reading the contents of the file " + filePath);
 }
 
 bool comp(trienode a, trienode b)
@@ -301,8 +284,7 @@ vector<string> triedoc::stopWords(string path)
 		//add_node()
 	}while(!stopfin.eof() && stopfin.good());
 	if(!stopfin.eof())
-		throw exception(
-			("Error reading the contents of the file " + stopPath).c_str());
+		throw FileException("Error reading the contents of the file " + stopPath);
 	stopfin.close();
 	return stopWords;
 }

@@ -1,5 +1,5 @@
 #include "triesite.h"
-#include <exception>
+#include "exceptions.h"
 #include <stdio.h>
 #include <regex>
 #include <sstream>
@@ -28,8 +28,7 @@ void triesite::create(string path){
 	doclist.clear();
 	long err = createDirectory(path);
 	if(err == 0)
-		throw exception(("Unable to create a search site at " + path
-			+ "\nError:" + strerror(errno)).c_str());
+		throw FileException("Unable to create a search site at " + path);
 }
 
 void triesite::mount(string path,char mode){
@@ -65,7 +64,7 @@ void triesite::docupload(string name,char func) {
 		doclist.push_back(triedoc(sitename,name,func));
 	}
 	else
-		throw exception("Document already exists in search site");
+		throw SiteException("upload" + name, true);
 }
 
 string triesite::docdownload(string name,string path = getCurrentPath()) {
@@ -96,8 +95,7 @@ void triesite::docdel(string name,char type)
 {
 	triedoc* targ = docexists(name);
 	if(targ == NULL)
-		throw exception(("Couldn't delete " + name + " because "
-			"there is no document by that name.").c_str());
+		throw SiteException("delete " + name);
 	else 
 	{
 		targ->del(sitename,type);
@@ -108,18 +106,18 @@ void triesite::docdel(string name,char type)
 void triesite::putstopfl(string stopName)
 {
 	if(getFileSuffix(stopName) !="stop")
-		throw exception((stopName + " is not a valid stop file").c_str());
+		throw SystemException(stopName + " is not a valid stop file");
 	string stopSrc = makeFullPath(stopName);
 	copyFileToDirectory(stopSrc,sitename,true);
-	rename(appendPath(sitename,getFileName(stopName)).c_str(),appendPath(sitename,"stop.lst").c_str());
+	rename((sitename + '\\' + getFileName(stopName)).c_str(), (sitename + "\\stop.lst").c_str());
 }
 
 void triesite::docidx(string docName)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-		throw exception(("Couldn't index " + docName + " because "
-			"there is no document by the name: ").c_str());
+		throw SystemException("Couldn't index " + docName + " because "
+			"there is no document by the name: ");
 	else 
 		targ->idx(sitename);
 }
@@ -142,7 +140,7 @@ list<string> triesite::listdoc(long listtype)
 			case 2:
 				break;
 			default:
-				throw exception("Invald list type parameter in triesite::listdoc");
+				throw SystemException("Invald list type");
 			}
 		}
 		else
@@ -156,7 +154,7 @@ list<string> triesite::listdoc(long listtype)
 				ret.push_back(iter->getdocname());
 				break;
 			default:
-				throw exception("Invald list type parameter in triesite::listdoc");
+				throw SystemException("Invald list type");
 			}
 		}
 	}
@@ -166,8 +164,7 @@ string triesite::expsearch(string docName,string expr)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-		throw exception(("Couldn't search " + docName + " because "
-			"there is no document by the name: ").c_str());
+		throw SiteException("search " + docName);
 	else
 		return targ->expsearch(sitename,expr);
 }
@@ -175,8 +172,7 @@ long triesite::expcount(string docName,string expr)
 {
 	triedoc* targ = docexists(docName);
 	if(targ == NULL)
-		throw exception(("Couldn't search " + docName + " because "
-			"there is no document by the name: ").c_str());
+		throw SiteException("search " + docName);
 	else
 		return targ->expcount(sitename,expr);
 }

@@ -5,6 +5,7 @@
 #include <sstream>
 #include <limits>
 #include "trienode.h"
+#include "exceptions.h"
 using namespace std;
 
 namespace Library {
@@ -261,12 +262,12 @@ namespace Library {
 					}
 					// If the stack runs out without finding an open-paren, then there are mismatched parentheses.
 					if(!pe)
-						throw exception("Error: mismatched parentheses");
+						throw ParseException("Mismatched parentheses");
 					// Pop the open parenthesis from the stack, but not onto the output queue.
 					op_stack.pop_back();
 				}
 				else // Unknown token
-					throw exception(string("Unknown token ").append(1, c).c_str());
+					throw ParseException(string("Unknown token ").append(1, c));
 			}
 		}
 		// When there are no more tokens to read:
@@ -275,12 +276,12 @@ namespace Library {
 		{
 			sc = op_stack.back();
 			if(sc == '(' || sc == ')')
-				throw exception("Error: mismatched parentheses");
+				throw ParseException("Mismatched parentheses");
 			eval(sc, var_stack, op_stack);
 			op_stack.pop_back();
 		}
 		if(var_stack.size() != 1)
-			throw exception("Error: more operands than operators");
+			throw ParseException("More operands than operators");
 		return var_stack.back();
 	}
 }
