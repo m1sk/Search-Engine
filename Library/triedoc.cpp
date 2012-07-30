@@ -138,29 +138,25 @@ bool is_stop(string word, vector<string> stop)
 
 void triedoc::idx(string path)
 {
-	string next;
 	regex rgx("[-a-zA-Z0-9]+"); // Represents all sequences of alphanumeric characters and hyphen
-	vector<string> stopWords;
-	vector<string> words;
 	string stopPath = path + '\\' + docname + '\\' + docname + ".stop";
 	string filePath = path + '\\' + docname + '\\' + docname + '.' + docext;
+	vector<string> stopWords, words;
+	string next;
 
 	ifstream stopfin(stopPath);
-	if(stopfin.is_open()) {
-		do {
-			getline(stopfin,next);
-			stopWords.push_back(next);
-		} while(!stopfin.eof() && stopfin.good());
-		if(!stopfin.eof())
-			throw exception(
-				("Error reading the contents of the file " + stopPath).c_str());
-		stopfin.close();
-	}
+	if(!stopfin.is_open())
+		throw exception(("Error opening the file " + stopPath).c_str());
+	do {
+		getline(stopfin,next);
+		stopWords.push_back(next);
+	} while(!stopfin.eof() && stopfin.good());
+	if(!stopfin.eof())
+		throw exception(("Error reading the contents of the file " + stopPath).c_str());
 	
 	ifstream fin(filePath);
 	if(!fin.is_open())
-		throw exception(
-			("Error reading the contents of the file " + filePath).c_str());
+		throw exception(("Error opening the file " + filePath).c_str());
 	long pos;
 	long lo=0;
 	do {
@@ -169,15 +165,13 @@ void triedoc::idx(string path)
 		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end;
 			it != it_end; ++it)	{
 			if((count (stopWords.begin(), stopWords.end(), (*it)[0]) == 0)
-				&& ((*it)[0].matched)) {
+				&& ((*it)[0].matched))
 				add_node((*it)[0], lo + it->position());
-			}
 		}
 		lo += next.length();
 	} while(!fin.eof() && fin.good());
 	if(!fin.eof())
-		throw exception(
-			("Error reading the contents of the file " + filePath).c_str());
+		throw exception(("Error reading the contents of the file " + filePath).c_str());
 }
 
 bool comp(trienode a, trienode b)
