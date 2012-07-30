@@ -50,8 +50,6 @@ namespace Library {
 			if(node == trienode::INVALID_NODE)
 				return T::MIN();
 		}
-		// Debugging
-		 cerr << word <<" Last char:" << word[word.length()-1] << endl;
 		
 		if((word[word.length()-1] == '*') && ((ret = wildcard(word, nextNode))!= -1))
 			return ret;

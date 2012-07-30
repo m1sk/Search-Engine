@@ -1,21 +1,14 @@
 #include "triebuffer.h"
-// Debugging
-//#include <iostream>
-//using std::cerr;
 using namespace Library;
 
 triebuffer::triebuffer(string path)
 {
-// Debugging
-//	cerr << "Building object " << this << " with path " << path << "\n";
 	buffer = new trienode [10];
 	filePath = path;
 	file = new fstream();
 }
 triebuffer::triebuffer(const triebuffer& other)
 {
-// Debugging
-//	cerr << "Copying object " << &other << "\npath: " << other.filePath << "\n";
 	buffer = new trienode [10];
 	filePath = other.filePath;
 	file = new fstream();
@@ -57,10 +50,6 @@ void triebuffer::read(ios::pos_type idx)
 		file->clear();
 		write();
 	}
-// Debugging
-//	for(long i = 0; i < 10; ++i)
-//		cerr << "Read: " << buffer[i].nodeserialnr << ' ' << buffer[i].letter << '\n';
-//	cerr << '\n';
 }
 
 void triebuffer::write()
@@ -94,17 +83,12 @@ void triebuffer::open_file(string path, bool append)
 
 long triebuffer::file_size()
 {
-	fstream tmp(filePath, ios::in | ios::binary | ios::ate);
-// Debugging
-//	cerr << "file size: " << file->tellg() << "\nsize of trienode: " << sizeof(trienode)
-//		<< "\nsize of long: " << sizeof(long) << "\nrecord count: " << ret << "\n";
-	return (long)(tmp.tellg() / sizeof(trienode));
+	return (long)(fstream(filePath, ios::in | ios::binary | ios::ate)
+		.tellg() / sizeof(trienode));
 }
 
 triebuffer::~triebuffer()
 {
-	// Debugging
-	// cerr<<"Destructor of "<< this << "\npath: " << filePath;
 	write();
 	delete [] buffer;
 	delete file;

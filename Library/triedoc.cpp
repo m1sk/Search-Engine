@@ -166,15 +166,10 @@ void triedoc::idx(string path)
 	do {
 		pos = (long) fin.tellg();
 		getline(fin,next);
-		// Debugging
-		//cerr << next << endl;
-		//cerr << "Offset: " << lo << endl;
 		for(sregex_iterator it(next.begin(), next.end(), rgx), it_end;
 			it != it_end; ++it)	{
 			if((count (stopWords.begin(), stopWords.end(), (*it)[0]) == 0)
 				&& ((*it)[0].matched)) {
-				// Debugging
-				//cerr << "\t" << (*it)[0] << " at position " << it->position() << endl;
 				add_node((*it)[0], lo + it->position());
 			}
 		}
@@ -183,9 +178,6 @@ void triedoc::idx(string path)
 	if(!fin.eof())
 		throw exception(
 			("Error reading the contents of the file " + filePath).c_str());
-	fin.close();
-// Debugging
-//	cerr<<"Node Array Size" << triebuf.file_size();
 }
 
 bool comp(trienode a, trienode b)
@@ -212,11 +204,6 @@ void triedoc::printWords(long idx, string str)
 			printWords(triebuf[node].links[i], str);
 		}
 	}
-// Debugging
-//	if(triebuf[node].wordend)
-//	{
-//		cout << str << endl;
-//	}
 }
 
 void triedoc::add_node(string word, long offset)
