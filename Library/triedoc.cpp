@@ -14,9 +14,9 @@ triedoc::triedoc(string path,string source, char mode)
 	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(1)
 {
 	if (source != "") {
-		try {
+		docname = getFilePrefix(getFileName(source));
+		docext  = getFileSuffix(getFileName(source));
 		putdoc(path, source, mode);
-		} catch (DocExistsException e) {}
 	} else {
 		docname = "";
 		docext = "";
@@ -43,8 +43,6 @@ triedoc::triedoc(const triedoc& other)
 void triedoc::putdoc(string path,string src,char mode){
 	string dest = doc_dir(path,src);
 	string fullsrc = makeFullPath(src);
-	docname = getFilePrefix(getFileName(src));
-	docext  = getFileSuffix(getFileName(src));
 
 	if(createDirectory(dest) != 0) // File doesn't exist
 	{
@@ -62,13 +60,8 @@ void triedoc::putdoc(string path,string src,char mode){
 		}
 	}
 	else if(GetLastError() == ERROR_PATH_NOT_FOUND) // Directory does not exist
-	{
-		throw exception(("Was unable to add document " + src + " since the source directory does not exist").c_str());
-	}
-	else // Directory exists
-	{
-		throw DocExistsException(("Was unable to add document " + src + " to the site " + path + " since it already exists there").c_str());
-	}
+		throw SystemException("Was unable to add document " + src + " since the source directory does not exist");
+	// else directory already exists, so return
 }
 
 void triedoc::getdoc(string path,string dest){

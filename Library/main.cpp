@@ -20,7 +20,7 @@ void start()
 	site.docupload("temp\\c.txt");
 	site.unmount();
 	site.mount(path);
-	site.mount("");
+//	site.mount(""); // Don't want to mess up source dir
 	
 	if(site.docexists("c")!=NULL)
 		cout<<"doc \"c.txt\" exists"<<endl;
