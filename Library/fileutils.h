@@ -103,8 +103,7 @@ namespace Library {
 	// returns true if the parameter "path" is a full path
 	static bool isFullPath(string path)
 	{
-
-		return (path[1]==':' && path[2]=='\\');
+		return path != "" && path[1]==':' && path[2]=='\\';
 	}
 
 	// Returns the current folder
