@@ -36,8 +36,6 @@ string doc_path (string path, string source)
 triedoc::triedoc(string path,string source, char mode)
 	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(1)
 {
-	triebuf[0] = trienode();
-	triebuf[0].nodeserialnr = 0;
 	if (source != "") {
 		try {
 		putdoc(path, source, mode);
@@ -47,6 +45,9 @@ triedoc::triedoc(string path,string source, char mode)
 		docext = "";
 		lastserialnr = 0;
 	}
+	triebuf.open_file(true);
+	triebuf[0] = trienode();
+	triebuf[0].nodeserialnr = 0;
 }
 
 triedoc::triedoc(const triedoc& other)

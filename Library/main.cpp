@@ -15,7 +15,6 @@ void start()
 	string path = "temp0";
 	triesite site(path);
 	site.docupload("temp\\a.txt");
-	cerr << "Exited docupload" << endl;
 	site.docupload("temp\\b.txt");
 	site.docupload("temp\\c.txt");
 	site.unmount();
