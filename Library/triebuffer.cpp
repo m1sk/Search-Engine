@@ -25,12 +25,12 @@ triebuffer::triebuffer(const triebuffer& other)
 
 ios::pos_type triebuffer::get_pos()
 {
-	return (buffer[0].nodeserialnr/10) * 10 * sizeof(trienode);
+	return buffer[0].nodeserialnr * sizeof(trienode);
 }
 
 long triebuffer::get_pos_nr()
 {
-	return (buffer[0].nodeserialnr/10) * 10;
+	return buffer[0].nodeserialnr;
 }
 
 trienode& triebuffer::get_node(long idx)
@@ -38,7 +38,7 @@ trienode& triebuffer::get_node(long idx)
 	if((idx/10) != (get_pos_nr()/10))
 	{
 		write();
-		file->seekp((idx/10)*10);
+		file->seekp((idx/10)*10*(sizeof trienode));
 		read(idx);
 	}
 
@@ -49,8 +49,15 @@ void triebuffer::read(ios::pos_type idx)
 {
 	if(!file->is_open())
 		open_file(true);
-	file->seekg((idx/10)*10);
+	file->seekg((idx/10)*10*(sizeof trienode));
 	file->read((char*)buffer, 10*(sizeof trienode));
+	if(file->eof()) {
+		for(std::streamsize i = file->gcount()/(sizeof trienode) - 1;
+			i < 10; ++i)
+			buffer[i] = trienode();
+		file->clear();
+		write();
+	}
 // Debugging
 //	for(long i = 0; i < 10; ++i)
 //		cerr << "Read: " << buffer[i].nodeserialnr << ' ' << buffer[i].letter << '\n';
