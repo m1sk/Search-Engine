@@ -37,9 +37,9 @@ void triesite::mount(string path,char mode){
 	// then add the created triedocs to the doclist
 	list<string> docs = getSubDirectoryNameList(sitename);
 	list<string>::iterator iter;
-	for(iter = docs.begin(); iter != docs.end(); ++iter){
-		doclist.push_back(triedoc(sitename, find_triedoc(sitename, *iter)));
-	}
+
+	for(iter = docs.begin(); iter != docs.end(); ++iter)
+		doclist.push_back(triedoc(sitename, mount_path(sitename, *iter)));
 }
 
 void triesite::unmount(){

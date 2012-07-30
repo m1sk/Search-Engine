@@ -10,18 +10,6 @@
 using namespace Library;
 using namespace std::tr1;
 
-string doc_dir (string path, string source)
-{
-	string name = getFileName(getFilePrefix(source));
-	return path + (*(path.end() - 1) == '\\'? "":"\\") + name + "\\";
-}
-
-string doc_path (string path, string source)
-{
-	string name = getFileName(getFilePrefix(source));
-	return doc_dir(path, source) + name;
-}
-
 triedoc::triedoc(string path,string source, char mode)
 	: triebuf (doc_path(path,source) + ".trie"), lastserialnr(1)
 {
@@ -185,8 +173,7 @@ void triedoc::printWords(long idx, string str)
 
 void triedoc::add_node(string word, long offset)
 {
-	long index = 0;
-	long ptr = index;
+	long ptr = 0;
     for(string::const_iterator chr = word.begin(); chr != word.end(); ++chr)
     {
         // If the next link doesn't exist, create it
@@ -194,11 +181,10 @@ void triedoc::add_node(string word, long offset)
         {
 			trienode tmp(lastserialnr++, offset, 0, *chr, false);
 			triebuf[tmp.nodeserialnr] = tmp;
-			triebuf[ptr][*chr] = lastserialnr;
+			triebuf[ptr][*chr] = tmp.nodeserialnr;
         }
         // Update data
-        index = triebuf[ptr][*chr];
-		ptr = index;//chng
+        ptr = triebuf[ptr][*chr];
     }
 	++(triebuf[ptr].nrofoccurences);
 	triebuf[ptr].wordend = true;

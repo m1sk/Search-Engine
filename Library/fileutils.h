@@ -204,22 +204,29 @@ namespace Library {
 		return 0;
 	}
 
-	static string appendPath(string base, string extra)
+	static string doc_dir (string path, string source)
 	{
-		return base + "\\" + extra;
+		string name = getFileName(getFilePrefix(source));
+		return path + "\\" + name + "\\";
 	}
 
-	static string find_triedoc(string site, string name)
+	static string doc_path (string path, string source)
+	{
+		string name = getFileName(getFilePrefix(source));
+		return doc_dir(path, source) + name;
+	}
+
+	static string mount_path (string site, string doc)
 	{
 		list<string>files;
 		list<string>::iterator fileit;
-		files = getFileNameList(appendPath(site, name));
+		files = getFileNameList(site + '\\' + doc);
 		for(fileit = files.begin(); fileit!=files.end(); fileit++)
 		{
-			if((getFilePrefix(*fileit) == name)
+			if((getFilePrefix(*fileit) == doc)
 				&& (getFileSuffix(*fileit) != string("stop"))
 				&& (getFileSuffix(*fileit) != string("trie")))
-				return *fileit;
+				return site + '\\' + doc + '\\' + *fileit;
 		}
 		return "";
 	}
