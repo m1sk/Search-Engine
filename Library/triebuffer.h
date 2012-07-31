@@ -12,7 +12,7 @@ namespace Library {
 		fstream* file;
 		// A buffer of constant length 10 of the trienode objects at
 		// the current position in the file
-		// (I.e. an interpretation of the next (sizeof trienode) * 10 bytes
+		// (I.e. an interpretation of the next sizeof(trienode) * 10 bytes
 		trienode* buffer;
 		// The file path
 		string filePath;

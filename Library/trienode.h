@@ -21,7 +21,7 @@ namespace Library {
 		bool          wordend;
 		// Array indeces are the ASCII values of the characters
 		// Array values  are the serial numbers of the next nodes
-		long int      links [LINKS_LENGTH];
+		long          links [LINKS_LENGTH];
 		/*************************************************
 		* FUNCTION
 		*    constructor

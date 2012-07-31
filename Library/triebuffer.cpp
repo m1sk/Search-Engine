@@ -30,7 +30,7 @@ trienode& triebuffer::operator[](long idx)
 {
 	if((idx/10) != (get_block()/10)) {
 		write();
-		file->seekp((idx/10)*10*(sizeof trienode));
+		file->seekp((idx/10)*10*sizeof(trienode));
 		read(idx);
 	}
 
@@ -41,10 +41,11 @@ void triebuffer::read(ios::pos_type idx)
 {
 	if(!file->is_open())
 		open_file(true);
-	file->seekg((idx/10)*10*(sizeof trienode));
-	file->read((char*)buffer, 10*(sizeof trienode));
+	file->seekg((idx/10)*10*sizeof(trienode));
+	file->read((char*)buffer, 10*sizeof(trienode));
+		<< file_size() << " trienodes\n";
 	if(file->eof()) {
-		for(std::streamsize i = file->gcount()/(sizeof trienode) - 1;
+		for(std::streamsize i = file->gcount()/sizeof(trienode) - 1;
 			i < 10; ++i)
 			buffer[i] = trienode();
 		file->clear();
@@ -63,7 +64,8 @@ void triebuffer::write()
 void triebuffer::open_file(bool append)
 {
 	fstream(filePath, ios::app).close(); // Create the file if it doesn't exist
-	file->open(filePath, ios::binary | ios::out | ios::in | (append? ios::app : 0));
+	file->open(filePath, ios::binary | ios::out | ios::in
+		| (append? ios::app : (ios_base::openmode) 0));
 	if(!file->is_open())
 		throw FileException("Couldn't open .trie file " + filePath);
 	if(file_size() == 0) {
