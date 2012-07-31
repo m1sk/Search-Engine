@@ -154,6 +154,8 @@ void triedoc::printWords(long idx, string str)
 	long node = idx;
 	if (idx != 0)
 		str += triebuf[node].letter;
+	if(triebuf[node].wordend)
+		cout << str << "\n";
 	for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 	{
 		if(triebuf[node].links[i] != trienode::INVALID_NODE)
