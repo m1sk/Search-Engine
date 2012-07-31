@@ -1,5 +1,6 @@
 #pragma once
 #include "exceptions.h"
+#include <sys/stat.h>
 #include <windows.h>
 #include <iostream>
 #include <list>
@@ -229,6 +230,13 @@ namespace Library {
 				return site + '\\' + doc + '\\' + *fileit;
 		}
 		return "";
+	}
+
+	static long file_size (string path)
+	{
+		struct stat filestatus;
+		stat(path.c_str(), &filestatus);
+		return filestatus.st_size;
 	}
 }
 

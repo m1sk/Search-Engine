@@ -26,7 +26,7 @@ printf(" # count:  %-6i#\n",(nrofoccurences <= 0? 0:nrofoccurences));
 printf(" # end?:   %-6i#\n",wordend);
 printf(" #---------------#\n");
 for(long j=0 ; j<256;j++)
-if(links[j]!=-1)
+if(links[j] != INVALID_NODE)
 printf(" #%6c->%-6i #\n",j,links[j]);
 printf(" #################\n");
 }

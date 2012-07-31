@@ -39,14 +39,9 @@ namespace Library {
 		triebuffer(const triebuffer&);
 	/*************************************************
 	* FUNCTION
-	*    get_pos
-	* RETURN VALUE
-	*    The current position in the file in characters
-	**************************************************/
-		ios::pos_type get_pos();
-	/*************************************************
-	* FUNCTION
-	*    get_block
+	*    block
+	* PARAMETERS
+	*    long idx - The serial number of the node
 	* RETURN VALUE
 	*    The current position in the file in trienodes
 	**************************************************/
@@ -82,18 +77,18 @@ namespace Library {
 		void write();
 	/*************************************************
 	* FUNCTION
-	*    open_file
-	* PATAMETERS
-	*    bool append - Whether to open the file in append mode
-	*                  or empty it
-	* MEANING
-	*    Opens the file for I/O, in binary mode, with append as specified
-	*    by the parameter.
-	*    The get/put pointers will be located at the beginning of the file
-	* THROWS
-	*    Couldn't open .trie file _filePath_ - if there were errors when opening the file
-	**************************************************/
-		void open_file(bool append = false);
+    *    open_file
+    * PATAMETERS
+    *    bool append - Whether to open the file in append mode
+    *                  or empty it
+    * MEANING
+    *    Opens the file for I/O, in binary mode, with append as specified
+    *    by the parameter.
+    *    The get/put pointers will be located at the beginning of the file
+    * THROWS
+    *    Couldn't open .trie file _filePath_ - if there were errors when opening the file
+    **************************************************/
+	    void open_file();
 	/*************************************************
 	* FUNCTION
 	*    open_file
@@ -118,7 +113,7 @@ namespace Library {
 	* FUNCTION
 	*    destructor
 	* MEANING
-	*    Closes the file and deallocates the buffer
+	*    Closes the file
 	**************************************************/
 		~triebuffer();
 	private:

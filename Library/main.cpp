@@ -26,9 +26,8 @@ void start()
 		cout<<"doc \"c.txt\" exists"<<endl;
 
 	site.docidx("a");
-	site.docexists("a")->printWords();
 	site.docidx("b");
-//	site.docexists("a")->printNodes();
+	site.docexists("b")->printWords();
 	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
 	cout << "Search b: " << site.expcount("b","*") << endl;
 /*	for(int i = 0; i<=2; ++i)

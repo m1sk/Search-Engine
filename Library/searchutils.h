@@ -32,9 +32,6 @@ namespace Library {
 	template<class T>
 	T WordSearcher<T>::letters(string word, long node)
 	{
-		buf[node].print_node();
-		cerr << "Expression: " << word << "\n";
-
 		T ret;
 		long nextNode = -1;
 		if(word.length() == 0)
@@ -65,9 +62,6 @@ namespace Library {
 	template<class T>
 	T WordSearcher<T>::wildcard(string word, long node)
 	{
-		buf[node].print_node();
-		cerr << "Expression: " << word << "\n";
-
 		long link = trienode::INVALID_NODE;
 		T comp;
 		if(word != "")

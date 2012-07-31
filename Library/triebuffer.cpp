@@ -16,10 +16,6 @@ triebuffer::triebuffer(const triebuffer& other)
 		buffer[i] = other.buffer[i];
 }
 
-ios::pos_type triebuffer::get_pos()
-{
-	return buffer[0].nodeserialnr * sizeof(trienode);
-}
 
 long triebuffer::get_block()
 {

@@ -145,7 +145,7 @@ bool comp(trienode a, trienode b)
 
 void triedoc::printNodes()
 {
-	for(long nr = 0; nr < triebuf.file_size(); ++nr)
+	for(long nr = 0; nr < file_size(triebuf.filePath); ++nr)
 		if(triebuf[nr].nodeserialnr != trienode::INVALID_NODE)
 			triebuf[nr].print_node();
 }
@@ -194,9 +194,7 @@ string triedoc::lineWithOffset(string path,long offset)
 	{
 		getline(fin,line);
 		count += line.length();
-		//cerr << "Current location: " << count << " line: " << line << endl;
 	}while (count <= offset);
-	//cerr << "Current location: " << count << " line: " << line << endl;
 	return line;
 }
 
@@ -210,14 +208,6 @@ string triedoc::expsearch (string path, string expr)
 	string sexp = replace_atoms(expr);
 	long loc = shunting_yard(sexp, res);
 
-//	cerr << "Expsearch invoked" << endl;
-//	cerr << expr << " converted to:" << endl;
-//	cerr << sexp << endl;
-//	cerr << "Atom results: " << endl;
-//	for(vector<Occurence>::const_iterator i = res.begin(); i != res.end(); ++i)
-//		cerr << i->value << endl;
-//	 cerr << "Shunting yard says result is: " << loc << endl;
-//	 cerr << "Line including first occurence of searchexp: " << lineWithOffset(path, loc) << endl;
 	return lineWithOffset(path, loc);
 }
 
@@ -231,13 +221,6 @@ long triedoc::expcount (string path, string expr)
 	string sexp = replace_atoms(expr);
 	long count = shunting_yard(sexp, res);
 	
-//	cerr << "Expcount invoked" << endl;
-//	cerr << expr << " converted to:" << endl;
-//	cerr << sexp << endl;
-//	cerr << "Atom results: " << endl;
-//	for(vector<Count>::const_iterator i = res.begin(); i != res.end(); ++i)
-//		cerr << i->value << endl;
-//	 cerr << "Shunting yard says result is: " << count << endl;
 	return count;
 }
 bool triedoc::is_indexed(string path)
