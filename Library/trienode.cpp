@@ -30,3 +30,17 @@ if(links[j] != INVALID_NODE)
 printf(" #%6c->%-6i #\n",j,links[j]);
 printf(" #################\n");
 }
+
+void trienode::write(trienode& node, ofstream* file)
+{
+	file->seekp(node.nodeserialnr * sizeof(trienode));
+	file->write(reinterpret_cast<const char *>(&node), sizeof(trienode));
+}
+
+trienode trienode::read(const long serialnr, ifstream* file)
+{
+	trienode node(serialnr);
+	file->seekg(node.nodeserialnr * sizeof(trienode));
+	file->read(reinterpret_cast<char *>(&node), sizeof(trienode));
+	return node;
+}

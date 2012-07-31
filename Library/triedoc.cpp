@@ -22,8 +22,7 @@ triedoc::triedoc(string path,string source, char mode)
 		docext = "";
 		lastserialnr = 0;
 	}
-	triebuf.open_file(true);
-	triebuf[0] = trienode();
+	triebuf.open_file();
 	triebuf[0].nodeserialnr = 0;
 }
 

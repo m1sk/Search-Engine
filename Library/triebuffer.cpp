@@ -2,31 +2,28 @@
 using namespace Library;
 
 triebuffer::triebuffer(string path)
+	: buffer(),
+	filePath(path),
+	file(new fstream())
 {
-	buffer = new trienode [10];
-	filePath = path;
-	file = new fstream();
+	for(int i = 0; i < 10; ++i)
+		buffer.push_back(trienode(i));
 }
 triebuffer::triebuffer(const triebuffer& other)
-{
-	buffer = new trienode [10];
-	filePath = other.filePath;
-	file = new fstream();
-	for(long i = 0; i < 10; ++i)
-		buffer[i] = other.buffer[i];
-}
+	: buffer(other.buffer),
+	filePath(other.filePath),
+	file(new fstream())
+{}
 
-
-long triebuffer::get_block()
+long triebuffer::block(long idx)
 {
-	return buffer[0].nodeserialnr;
+	return (idx/10)*10;
 }
 
 trienode& triebuffer::operator[](long idx)
 {
-	if((idx/10) != (get_block()/10)) {
+	if((block(idx)) != (block(buffer[0].nodeserialnr))) {
 		write();
-		file->seekp((idx/10)*10*sizeof(trienode));
 		read(idx);
 	}
 
@@ -36,59 +33,48 @@ trienode& triebuffer::operator[](long idx)
 void triebuffer::read(ios::pos_type idx)
 {
 	if(!file->is_open())
-		open_file(true);
-	file->seekg((idx/10)*10*sizeof(trienode));
-	file->read((char*)buffer, 10*sizeof(trienode));
-		<< file_size() << " trienodes\n";
-	if(file->eof()) {
-		for(std::streamsize i = file->gcount()/sizeof(trienode) - 1;
-			i < 10; ++i)
-			buffer[i] = trienode();
-		file->clear();
-		write();
-	}
+		open_file();
+	extend_to(idx);
+	for(long i = 0; i < 10; ++i)
+		buffer[i] = trienode::read(block(idx) + i,
+							reinterpret_cast<ifstream*>(file));
 }
 
 void triebuffer::write()
 {
 	if(!file->is_open())
 		open_file();
-	file->seekp(get_pos());
-	file->write((char*) buffer,10*sizeof(trienode));
+	extend_to(block(buffer[0].nodeserialnr));
+	for(long i = 0; i < 10; ++i)
+		trienode::write(buffer[i], reinterpret_cast<ofstream*>(file));
+	file->close();
+	file->open(filePath, ios::binary | ios::out | ios::in | ios::ate);
 }
 
-void triebuffer::open_file(bool append)
+void triebuffer::open_file()
 {
 	fstream(filePath, ios::app).close(); // Create the file if it doesn't exist
-	file->open(filePath, ios::binary | ios::out | ios::in
-		| (append? ios::app : (ios_base::openmode) 0));
+	file->open(filePath, ios::binary | ios::out | ios::in | ios::ate);
 	if(!file->is_open())
 		throw FileException("Couldn't open .trie file " + filePath);
-	if(file_size() == 0) {
-		for(long i = 0; i < 10; ++i)
-			buffer[i] = trienode();
-		write();
-	}
-	file->seekp(0);
-	file->seekg(0);
-}
-void triebuffer::open_file(string path, bool append)
-{
-	if(path != "")
-		filePath = path;
-	open_file(append);
+	if(file_size(filePath) == 0)
+		extend_to(0);
+	file->close();
+	file->open(filePath, ios::binary | ios::out | ios::in | ios::ate);
 }
 
-long triebuffer::file_size()
+void triebuffer::extend_to(ios::pos_type idx)
 {
-	return (long)(fstream(filePath, ios::in | ios::binary | ios::ate)
-		.tellg() / sizeof(trienode));
+	long max = block(idx) + 9;
+	long end = file_size(filePath)/sizeof(trienode) - 1;
+	if(max <= end)
+		return;
+	for(++end; end <= max; ++end)
+		trienode::write(trienode(end), reinterpret_cast<ofstream*>(file));
 }
 
 triebuffer::~triebuffer()
 {
 	write();
-	delete [] buffer;
 	delete file;
 }
-

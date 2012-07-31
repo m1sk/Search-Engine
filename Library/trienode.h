@@ -49,6 +49,29 @@ namespace Library {
 		*    Prints the values of the node nicely
 		**************************************************/
 		void print_node() const;
+		/*************************************************
+		* FUNCTION
+		*    write
+		* PARAMETERS
+		*    trienode& node - A node to write
+		*    ofstream* file - A pointer to the file to
+		*                    write to
+		* MEANING
+		*    Writes the node to file
+		**************************************************/
+		static void write(trienode& node, ofstream* file);
+		/*************************************************
+		* FUNCTION
+		*    read
+		* PARAMETERS
+		* const long serialnr - The serial number of the node
+		*                       to read
+		*      ifstream* file - A pointer to the file to
+		*                       read from
+		* MEANING
+		*    Reads the node from file
+		**************************************************/
+		static trienode read(const long serialnr, ifstream* file);
 	};
 }
 

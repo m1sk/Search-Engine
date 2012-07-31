@@ -13,7 +13,7 @@ namespace Library {
 		// A buffer of constant length 10 of the trienode objects at
 		// the current position in the file
 		// (I.e. an interpretation of the next sizeof(trienode) * 10 bytes
-		trienode* buffer;
+		vector<trienode> buffer;
 		// The file path
 		string filePath;
 	/*************************************************
@@ -43,9 +43,10 @@ namespace Library {
 	* PARAMETERS
 	*    long idx - The serial number of the node
 	* RETURN VALUE
-	*    The current position in the file in trienodes
+	*    The serial no. of the first trienode in the block
+	*    containing idx
 	**************************************************/
-		long get_block();
+		static long block(long idx);
 	/*************************************************
 	* FUNCTION
 	*    operator[]
@@ -91,24 +92,15 @@ namespace Library {
 	    void open_file();
 	/*************************************************
 	* FUNCTION
-	*    open_file
-	* PATAMETERS
-	*    string path - The path to the file to be written
-	*    bool append - Whether to open the file in append mode
-	*                  or empty it
+    *    extend_to
+	* PARAMETERS
+	*    ios::pos_type idx - The index in the final block
+	*                        that must be accessible after
+	*                        calling extend_to
 	* MEANING
-	*    Calls open_file(bool) on the file passed if its a valid path, or filePath otherwise
-	* SIDE EFFECTS
-	*    Assigns filePath to the passed path if its valid
+	*    Extends file to include idx's block
 	**************************************************/
-		void open_file(string path,bool append = false);
-	/*************************************************
-	* FUNCTION
-	*    file_size
-	* RETURN VALUE
-	*    The amount of trienodes in the file
-	**************************************************/
-		long  file_size();
+		void extend_to(ios::pos_type idx);
 	/*************************************************
 	* FUNCTION
 	*    destructor
