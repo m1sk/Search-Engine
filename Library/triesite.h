@@ -240,3 +240,4 @@ namespace Library {
 		~triesite(void);
 	};
 }
+

@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "triesite.h"
 #include "fileutils.h"
+#include "exceptions.h"
 #include <regex>
 #include <iostream>
 
@@ -19,16 +20,17 @@ void start()
 	site.docupload("temp\\c.txt");
 	site.unmount();
 	site.mount(path);
+//	site.mount(""); // Don't want to mess up source dir
 	
 	if(site.docexists("c")!=NULL)
 		cout<<"doc \"c.txt\" exists"<<endl;
 
 	site.docidx("a");
 	site.docidx("b");
-//	site.docexists("a")->printNodes();
+	site.docexists("b")->printWords();
 	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
 	cout << "Search b: " << site.expcount("b","*") << endl;
-	for(int i = 0; i<=2; ++i)
+/*	for(int i = 0; i<=2; ++i)
 	{
 		cout << "Listdoc of type " << i << endl;
 		list<string> res = site.listdoc(i); 
@@ -36,6 +38,7 @@ void start()
 			cout << *it << endl;
 		cout << "-------------------" << endl << endl;
 	}
+*/
 }
 
 long _tmain(long argc, _TCHAR* argv[])
@@ -44,14 +47,30 @@ long _tmain(long argc, _TCHAR* argv[])
 	{
 		start();
 	}
-	catch(exception e)
+	catch(Library::DocException& e)
 	{
 		cerr << e.what() << endl;
 	}
-	system("pause");
-	
-	/*
- 	removeDirectoryWithSubs(makeFullPath("temp0"));
+	catch(Library::FileException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::ParseException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::SiteException& e)
+	{
+		cerr << e.what() << endl;
+	}
+	catch(Library::SystemException& e)
+	{
+		cerr << e.what() << endl;
+	}
+
+	cout << "Press any key to delete the triesite, or 'k' to keep it\n";
+	if('k' != cin.get())
+ 		removeDirectoryWithSubs(makeFullPath("temp0"));
 
 	/*
 	triesite site;
@@ -64,7 +83,6 @@ long _tmain(long argc, _TCHAR* argv[])
 	doc.idx(filePath);
 
 	doc.printWords();
-	doc.flush(filePath);
 	//delete &doc;
 	triebuffer buff(filePath+"file1\\file1.trie");
 	buff.open_file(true);
@@ -112,3 +130,4 @@ long _tmain(long argc, _TCHAR* argv[])
 	/**/
 	return 0;
 }
+

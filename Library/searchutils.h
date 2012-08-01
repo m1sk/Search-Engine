@@ -5,6 +5,7 @@
 #include <sstream>
 #include <limits>
 #include "trienode.h"
+#include "exceptions.h"
 using namespace std;
 
 namespace Library {
@@ -13,24 +14,17 @@ namespace Library {
 	* This library includes common functions involving parsing complex search expressions
 	* 
 	*/
-	//TODO
-	//Convert {Atom,Word}Searcher using templates to use generic Fields
-	//Convert WordSearcher::operator() to parser arbitrary wildcard locations
 
 	template<class T>
 	class WordSearcher
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
-		// root of the trie tree
-		trienode   root;
 		// dynamic array used when creating and searching trietree
 		triebuffer buf;
 		WordSearcher();
 	public:
-		WordSearcher(trienode _root,triebuffer _buf)
-			: root(_root), buf(_buf)
-		{}
-		long operator()(string word) { return letters(word, root.nodeserialnr);}
+		WordSearcher(triebuffer _buf) : buf(_buf)	{}
+		long operator()(string word) { return letters(word, 0);}
 		T letters(string word, long node);
 		T wildcard(string word, long node);
 	};
@@ -38,11 +32,8 @@ namespace Library {
 	template<class T>
 	T WordSearcher<T>::letters(string word, long node)
 	{
-		buf.get_node(node).print_node();
-		cerr << "Expression: " << word << "\n";
-
 		T ret;
-		long nextNode;
+		long nextNode = -1;
 		if(word.length() == 0)
 			return T::MIN();
 		for(unsigned long w = 0;w < word.length();w++)
@@ -53,40 +44,35 @@ namespace Library {
 				if(ret != T::MIN())
 					return ret;
 			}
-			node = buf.get_node(node).links[word[w]];
-			if(node == trienode::NULL_LINK)
+			node = buf[node].links[word[w]];
+			if(node == trienode::INVALID_NODE)
 				return T::MIN();
 		}
-		// Debugging
-		 cerr << word <<" Last char:" << word[word.length()-1] << endl;
 		
 		if((word[word.length()-1] == '*') && ((ret = wildcard(word, nextNode))!= -1))
 			return ret;
 		else
-			nextNode = buf.get_node(nextNode).links[word[word.length()-1]];
+			nextNode = buf[nextNode].links[word[word.length()-1]];
 		
-		if(buf.get_node(node).wordend)
-			return (T) buf.get_node(node);
+		if(buf[node].wordend)
+			return (T) buf[node];
 		return T::MIN();
 	}
 
 	template<class T>
 	T WordSearcher<T>::wildcard(string word, long node)
 	{
-		buf.get_node(node).print_node();
-		cerr << "Expression: " << word << "\n";
-
-		long link = trienode::NULL_LINK;
+		long link = trienode::INVALID_NODE;
 		T comp;
 		if(word != "")
 			comp = this->letters(word, node);
 		for(long i = 0; i <trienode::LINKS_LENGTH;i++  )
 		{
-			link = buf.get_node(node).links[i]; 
-			if(link != trienode::NULL_LINK)
+			link = buf[node].links[i]; 
+			if(link != trienode::INVALID_NODE)
 			{
-				if(buf.get_node(link).wordend && (word==""))
-					comp = comp + T(buf.get_node(link));
+				if(buf[link].wordend && (word==""))
+					comp = comp + T(buf[link]);
 				comp = comp + wildcard(word, link);
 
 			}
@@ -100,15 +86,11 @@ namespace Library {
 	class AtomSearcher
 	{
 		static const bool IS_VALID = T::IS_A_FIELD;
-		// root of the trie tree
-		trienode   root;
 		// dynamic array used when creating and searching trietree
 		triebuffer buf;
 		AtomSearcher();
 	public:
-		AtomSearcher(trienode _root, triebuffer _buf)
-			: root(_root), buf(_buf)
-		{}
+		AtomSearcher(triebuffer _buf) : buf(_buf) {}
 		long operator()(vector<string> expr);
 	};
 
@@ -117,7 +99,7 @@ namespace Library {
 	{
 		vector<T> values;
 		values.resize(expr.size());
-		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(root, buf));
+		transform(expr.begin(), expr.end(), values.begin(), WordSearcher<T>(buf));
 		T comp;
 		for(vector<T>::iterator i = values.begin(); i != values.end(); ++i)
 			comp = comp + *i;
@@ -274,12 +256,12 @@ namespace Library {
 					}
 					// If the stack runs out without finding an open-paren, then there are mismatched parentheses.
 					if(!pe)
-						throw exception("Error: mismatched parentheses");
+						throw ParseException("Mismatched parentheses");
 					// Pop the open parenthesis from the stack, but not onto the output queue.
 					op_stack.pop_back();
 				}
 				else // Unknown token
-					throw exception(string("Unknown token ").append(1, c).c_str());
+					throw ParseException(string("Unknown token ").append(1, c));
 			}
 		}
 		// When there are no more tokens to read:
@@ -288,12 +270,13 @@ namespace Library {
 		{
 			sc = op_stack.back();
 			if(sc == '(' || sc == ')')
-				throw exception("Error: mismatched parentheses");
+				throw ParseException("Mismatched parentheses");
 			eval(sc, var_stack, op_stack);
 			op_stack.pop_back();
 		}
 		if(var_stack.size() != 1)
-			throw exception("Error: more operands than operators");
+			throw ParseException("More operands than operators");
 		return var_stack.back();
 	}
 }
+

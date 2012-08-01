@@ -12,8 +12,8 @@ namespace Library {
 		fstream* file;
 		// A buffer of constant length 10 of the trienode objects at
 		// the current position in the file
-		// (I.e. an interpretation of the next (sizeof trienode) * 10 bytes
-		trienode* buffer;
+		// (I.e. an interpretation of the next sizeof(trienode) * 10 bytes
+		vector<trienode> buffer;
 		// The file path
 		string filePath;
 	/*************************************************
@@ -39,21 +39,17 @@ namespace Library {
 		triebuffer(const triebuffer&);
 	/*************************************************
 	* FUNCTION
-	*    get_pos
+	*    block
+	* PARAMETERS
+	*    long idx - The serial number of the node
 	* RETURN VALUE
-	*    The current position in the file in characters
+	*    The serial no. of the first trienode in the block
+	*    containing idx
 	**************************************************/
-		ios::pos_type get_pos();
+		static long block(long idx);
 	/*************************************************
 	* FUNCTION
-	*    get_pos_nr
-	* RETURN VALUE
-	*    The current position in the file in trienodes
-	**************************************************/
-		long           get_pos_nr();
-	/*************************************************
-	* FUNCTION
-	*    get_node
+	*    operator[]
 	* PATAMETERS
 	*    long idx - The serial number of the node
 	* RETURN VALUE
@@ -65,7 +61,7 @@ namespace Library {
 	*    (I.e. requesting for #1234, if it isn't in the buffer,
 	*    updates the buffer to include #1230-#1239)
 	**************************************************/
-		trienode& get_node(long idx);
+		trienode& operator[](long idx);
 	/*************************************************
 	* FUNCTION
 	*    read
@@ -82,53 +78,34 @@ namespace Library {
 		void write();
 	/*************************************************
 	* FUNCTION
-	*    open_file
-	* PATAMETERS
-	*    bool append - Whether to open the file in append mode
-	*                  or empty it
-	* MEANING
-	*    Opens the file for I/O, in binary mode, with append as specified
-	*    by the parameter.
-	*    The get/put pointers will be located at the beginning of the file
-	* THROWS
-	*    Couldn't open .trie file _filePath_ - if there were errors when opening the file
-	**************************************************/
-		void open_file(bool append = false);
+    *    open_file
+    * PATAMETERS
+    *    bool append - Whether to open the file in append mode
+    *                  or empty it
+    * MEANING
+    *    Opens the file for I/O, in binary mode, with append as specified
+    *    by the parameter.
+    *    The get/put pointers will be located at the beginning of the file
+    * THROWS
+    *    Couldn't open .trie file _filePath_ - if there were errors when opening the file
+    **************************************************/
+	    void open_file();
 	/*************************************************
 	* FUNCTION
-	*    open_file
-	* PATAMETERS
-	*    string path - The path to the file to be written
-	*    bool append - Whether to open the file in append mode
-	*                  or empty it
+    *    extend_to
+	* PARAMETERS
+	*    ios::pos_type idx - The index in the final block
+	*                        that must be accessible after
+	*                        calling extend_to
 	* MEANING
-	*    Calls open_file(bool) on the file passed if its a valid path, or filePath otherwise
-	* SIDE EFFECTS
-	*    Assigns filePath to the passed path if its valid
+	*    Extends file to include idx's block
 	**************************************************/
-		void open_file(string path,bool append = false);
-	/*************************************************
-	* FUNCTION
-	*    close_file
-	* MEANING
-	*    Closes the file
-	**************************************************/
-		void close_file();
-	/*************************************************
-	* FUNCTION
-	*    file_size
-	* RETURN VALUE
-	*    The amount of trienodes in the file
-	**************************************************/
-		long  file_size();
+		void extend_to(ios::pos_type idx);
 	/*************************************************
 	* FUNCTION
 	*    destructor
 	* MEANING
-	*    Closes the file and deallocates the buffer
-	* WARNING
-	*    Doesn't write non-written data to file!
-	*    Write all your data before calling the destructor!
+	*    Closes the file
 	**************************************************/
 		~triebuffer();
 	private:
@@ -137,3 +114,4 @@ namespace Library {
 		              // with any file
 	};
 }
+
