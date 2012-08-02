@@ -33,10 +33,9 @@ namespace Library {
 	T WordSearcher<T>::letters(string word, long node)
 	{
 		T ret;
-		long nextNode = -1;
 		if(word.length() == 0)
 			return T::MIN();
-		for(unsigned long w = 0;w < word.length();w++)
+		for(unsigned long w = 0; w < word.length(); ++w)
 		{
 			if(word[w] == '*')
 			{
@@ -49,11 +48,6 @@ namespace Library {
 				return T::MIN();
 		}
 		
-		if((word[word.length()-1] == '*') && ((ret = wildcard(word, nextNode))!= -1))
-			return ret;
-		else
-			nextNode = buf[nextNode].links[word[word.length()-1]];
-		
 		if(buf[node].wordend)
 			return (T) buf[node];
 		return T::MIN();
@@ -65,13 +59,13 @@ namespace Library {
 		long link = trienode::INVALID_NODE;
 		T comp;
 		if(word != "")
-			comp = this->letters(word, node);
-		for(long i = 0; i <trienode::LINKS_LENGTH;i++  )
+			comp = letters(word, node);
+		for(long i = 0; i < trienode::LINKS_LENGTH; ++i)
 		{
 			link = buf[node].links[i]; 
 			if(link != trienode::INVALID_NODE)
 			{
-				if(buf[link].wordend && (word==""))
+				if(buf[link].wordend && (word == ""))
 					comp = comp + T(buf[link]);
 				comp = comp + wildcard(word, link);
 
