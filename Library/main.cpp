@@ -14,22 +14,34 @@ using namespace Library;
 void start()
 {
 	string path = "temp0";
-	triesite site(path);
-	site.docupload("temp\\a.txt");
-	site.docupload("temp\\b.txt");
-	site.docupload("temp\\c.txt");
-	site.unmount();
-	site.mount(path);
+	triesite site;
+	try {
+		site.create(path);
+		site.docupload("temp\\a.txt");
+		site.docupload("temp\\b.txt");
+		site.docupload("temp\\c.txt");
+		site.unmount();
+		site.mount(path);
+	} catch (FileException e) {
+		cout << "Failed to create site. Mounting...\n";
+		site.mount(path);
+	}
 //	site.mount(""); // Don't want to mess up source dir
 	
 	if(site.docexists("c")!=NULL)
 		cout<<"doc \"c.txt\" exists"<<endl;
-
+	
+	site.docexists("b")->printWords();
+	cout << "------------------------------------\n"
+		<< "After indexing:\n\n";
 	site.docidx("a");
 	site.docidx("b");
 	site.docexists("b")->printWords();
 	cout << "Search a: " << site.expsearch("a", "*e*") << endl;
 	cout << "Search b: " << site.expcount("b","*") << endl;
+	list<string> lookup = site.doclookup("a*");
+	for(list<string>::const_iterator s = lookup.begin(); s != lookup.end(); ++s)
+		cout << *s << "\n";
 /*	for(int i = 0; i<=2; ++i)
 	{
 		cout << "Listdoc of type " << i << endl;

@@ -60,7 +60,8 @@ void triedoc::putdoc(string path,string src,char mode){
 	}
 	else if(GetLastError() == ERROR_PATH_NOT_FOUND) // Directory does not exist
 		throw SystemException("Was unable to add document " + src + " since the source directory does not exist");
-	// else directory already exists, so return
+	else // Document exists in the site
+		triebuf.read(0);
 }
 
 void triedoc::getdoc(string path,string dest){

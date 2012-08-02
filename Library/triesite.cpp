@@ -8,13 +8,11 @@ using namespace Library;
 triesite::triesite(string path, char func, char mode) {
 	doclist = list<triedoc>();
 	if(path.compare("")!=0){
-		sitename = makeFullPath(path);
-		mounted = true;
 		mounttype = mode;
 		if(func == 'C' || func == 'c')
-			create(sitename);
+			create(path);
 		else if(func == 'M' || func == 'm')
-			mount (sitename, mode);
+			mount (path, mode);
 	}
 	else {
 		sitename = "";
@@ -25,8 +23,10 @@ triesite::triesite(string path, char func, char mode) {
 }
 
 void triesite::create(string path){
+	sitename = makeFullPath(path);
+	mounted = true;
 	doclist.clear();
-	long err = createDirectory(path);
+	long err = createDirectory(sitename);
 	if(err == 0)
 		throw FileException("Unable to create a search site at " + path);
 }
@@ -40,6 +40,8 @@ void triesite::mount(string path,char mode){
 
 	for(iter = docs.begin(); iter != docs.end(); ++iter)
 		doclist.push_back(triedoc(sitename, mount_path(sitename, *iter)));
+	mounted = true;
+	mounttype = mode;
 }
 
 void triesite::unmount(){
