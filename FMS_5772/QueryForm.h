@@ -9,9 +9,8 @@ using namespace std;
 using namespace Library;
 
 namespace FMS_5772 {
-	extern triesite site;
-	extern bool admin;
-	extern string sitepath;
+	
+
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -27,8 +26,11 @@ namespace FMS_5772 {
 	public ref class QueryForm : public System::Windows::Forms::Form
 	{
 	public:
-		QueryForm(void)
+		QueryForm(triesite* _site,bool _admin, string* _sitepath)
 		{
+			site = _site;
+			admin = _admin;
+			sitepath = _sitepath;
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
@@ -43,10 +45,11 @@ namespace FMS_5772 {
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  dataGridViewTextBoxColumn1;
 	private: System::Windows::Forms::DataGridViewTextBoxColumn^  dataGridViewTextBoxColumn3;
 
-
-
-
 	protected:
+		triesite* site;
+		bool admin;
+		string* sitepath;
+	
 		long count;
 		long statCount;
 		/// <summary>
@@ -364,7 +367,7 @@ private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs
 			 this->dgvResults->Visible = true;
 			 if(this->rbQuery->Checked) {
 				string query_exp((const char*)Marshal::StringToHGlobalAnsi(this->query->Text).ToPointer());
-				list<string> matches = site.doclookup(query_exp);
+				list<string> matches = site->doclookup(query_exp);
 				if(matches.size()==0)
 				{
 					 MessageBox::Show("No matches found");
@@ -379,12 +382,12 @@ private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs
 				for(list<string>::const_iterator match
 						= matches.begin(); match != matches.end(); ++match,++i)
 				{
-					int siteCount = site.expcount(*match,query_exp);
+					int siteCount = site->expcount(*match,query_exp);
 					 std::ostringstream oss;
 					oss << siteCount;
     //return oss.str();
 					this->dgvResults->Rows[i]->Cells[0]->Value = gcnew String((*match).c_str());
-					this->dgvResults->Rows[i]->Cells[1]->Value = gcnew String(site.expsearch(*match,query_exp).c_str());
+					this->dgvResults->Rows[i]->Cells[1]->Value = gcnew String(site->expsearch(*match,query_exp).c_str());
 					this->dgvResults->Rows[i]->Cells[2]->Value = gcnew String(oss.str().c_str());
 					//data.push_back(std::make_tuple(*match,
 					//					site.expsearch(*match,query_exp),
@@ -395,8 +398,8 @@ private: System::Void btnSearch_Click(System::Object^  sender, System::EventArgs
 					}
 					count += siteCount;
 				}
-				long total = site.listdoc(1).size();
-				conv << count << " out of " << total;
+				long total = site->listdoc(1).size();
+				conv << count << " in " << total<<" documents";
 				this->txtResults->Text = gcnew String(conv.str().c_str());
 			//this->dgvResults->ItemsSource; //= List<Results> for query
 			//Summary: docmatch_count " out of " doc_count " documents"
@@ -428,8 +431,8 @@ private: System::Void button1_Click(System::Object^  sender, System::EventArgs^ 
 					  MessageBox::Show("You must select an indexed document!");
 				  }
 				 try{
-					string search = site.expsearch(selectedDoc,query_exp);
-					int expcount  = site.expcount(selectedDoc,query_exp);
+					string search = site->expsearch(selectedDoc,query_exp);
+					int expcount  = site->expcount(selectedDoc,query_exp);
 					std::ostringstream oss;
 					oss<<expcount;
 					this->dgvResults->Rows->Clear();
@@ -460,8 +463,8 @@ private: System::Void rBtnCount_CheckedChanged(System::Object^  sender, System::
 				 
 				for(int i=0;i<this->dgvResults->Rows->Count; i++)
 				{
-					 std::ostringstream oss;
-					oss << (((float)this->dgvResults->Rows[i]->Cells[c]->Value)/div)*100;
+					std::ostringstream oss;
+					oss << ((Int32::Parse((String^)this->dgvResults->Rows[i]->Cells[c]->Value))/div)*100.0;
 					this->dgvResults->Rows[i]->Cells[c]->Value = gcnew String(oss.str().c_str());
 			    }
 			 }
@@ -470,7 +473,7 @@ private: System::Void rBtnCount_CheckedChanged(System::Object^  sender, System::
 				 for(int i=0;i<this->dgvResults->Rows->Count; i++)
 				 {
 					std::ostringstream oss;
-					oss << (((float)this->dgvResults->Rows[i]->Cells[c]->Value)/100)*div;
+					oss << ((Double::Parse((String^)this->dgvResults->Rows[i]->Cells[c]->Value))/100.0)*div;
 					this->dgvResults->Rows[i]->Cells[c]->Value = gcnew String(oss.str().c_str());
 				 }
 			 }
@@ -478,7 +481,7 @@ private: System::Void rBtnCount_CheckedChanged(System::Object^  sender, System::
 private: System::Void btnAllDocs_Click(System::Object^  sender, System::EventArgs^  e) {
 			list<string> docs;
 			 try{
-			 docs = site.listdoc(0);
+			 docs = site->listdoc(0);
 			} 
 			 catch(exception e)
 			 {
@@ -509,7 +512,7 @@ private: System::Void rbQuery_CheckedChanged(System::Object^  sender, System::Ev
 			{
 				list<string> docs;
 				 try{
-				 docs = site.listdoc(0);
+				 docs = site->listdoc(0);
 				 } 
 				 catch(exception e)
 				 {
@@ -521,8 +524,8 @@ private: System::Void rbQuery_CheckedChanged(System::Object^  sender, System::Ev
 					 MessageBox::Show("No Docs in site");
 					 return;
 				}
-				this->dgvResults->Rows->Clear();
-				this->dgvResults->Rows->Add(docs.size());
+				this->dgvStatistics->Rows->Clear();
+				this->dgvStatistics->Rows->Add(docs.size());
 				int i = 0;
 				statCount = 0;
 				 for(list<string>::const_iterator doc
@@ -534,11 +537,15 @@ private: System::Void rbQuery_CheckedChanged(System::Object^  sender, System::Ev
 						 docChange = doc->substr(0,(*doc).length()-2);
 					 }
 					 std::ostringstream oss;
-					 oss<<loadHitsForDoc(docChange);
-					 this->dgvResults->Rows[i]->Cells[0]->Value = gcnew String(docChange.c_str());
-					 this->dgvResults->Rows[i]->Cells[1]->Value = gcnew String(oss.str().c_str());
+					 int hitsForDoc=loadHitsForDoc(docChange); 
+					 oss<<hitsForDoc;
+					 this->dgvStatistics->Rows[i]->Cells[0]->Value = gcnew String(docChange.c_str());
+					 this->dgvStatistics->Rows[i]->Cells[1]->Value = gcnew String(oss.str().c_str());
 					 //add statistical intel
+					 statCount+=hitsForDoc;
+					 
 				}
+				 this->txtResults->Text = gcnew String("Total "+ statCount+" in " + i + "documents");
 			}
 		 }
 private: System::Void btnDownload_Click(System::Object^  sender, System::EventArgs^  e) {
@@ -551,7 +558,7 @@ private: System::Void btnDownload_Click(System::Object^  sender, System::EventAr
 					 selectedDoc = selectedDoc.substr(0,selectedDoc.length()-2);
 				 }
 				 try{
-					site.docdownload(selectedDoc,downDest);
+					site->docdownload(selectedDoc,downDest);
 				 }catch(exception e)
 			 {
 				 MessageBox::Show(gcnew String(e.what()));
@@ -564,7 +571,7 @@ private: System::Void btnDownload_Click(System::Object^  sender, System::EventAr
 		 }
 		 int loadHitsForDoc(string docname)
 		 {
-			 ifstream inf(sitepath+'\\'+docname+"\\hits");
+			 ifstream inf(*sitepath+'\\'+docname+"\\hits");
 			 if(!inf)
 			 {
 				 //handle error
@@ -577,10 +584,9 @@ private: System::Void btnDownload_Click(System::Object^  sender, System::EventAr
 		 }
 		 void saveHitsForDoc(string docname,int hits)
 		 {
-			 ofstream of(sitepath+'\\'+docname+"\\hits");
+			 ofstream of(*sitepath+'\\'+docname+"\\hits");
 			 if(!of)
 			 {
-				 //
 				 return;
 			 }
 			 of<<hits;

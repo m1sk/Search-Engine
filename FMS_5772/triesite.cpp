@@ -1,6 +1,6 @@
 #include "stdafx.h"
 #include "triesite.h"
-#include <exception>
+#include "exceptions.h"
 #include <stdio.h>
 #include <regex>
 #include <sstream>
@@ -9,8 +9,6 @@ using namespace Library;
 triesite::triesite(string path, char func, char mode) {
 	doclist = list<triedoc>();
 	if(path.compare("")!=0){
-		sitename = makeFullPath(path);
-		mounted = true;
 		mounttype = mode;
 		if(func == 'C' || func == 'c')
 			create(sitename);
@@ -26,64 +24,56 @@ triesite::triesite(string path, char func, char mode) {
 }
 
 void triesite::create(string path){
-	if(mounted)
-		unmount();
+	sitename = makeFullPath(path);
+	mounted = true;
 	doclist.clear();
 	long err = createDirectory(path);
 	if(err == 0)
-		throw exception(("Unable to create a search site at " + path
-			+ "\nError:" + strerror(errno)).c_str());
+		throw FileException("Unable to create a search site at " + path);
 }
 
 void triesite::mount(string path,char mode){
-	if(mounted)
-		unmount();
 	sitename = makeFullPath(path);
 	// Iterate through all files in path and create triedocs from each
 	// then add the created triedocs to the doclist
 	list<string> docs = getSubDirectoryNameList(sitename);
 	list<string>::iterator iter;
-	for(iter = docs.begin(); iter != docs.end(); ++iter){
-		doclist.push_back(triedoc(sitename, find_triedoc(sitename, *iter)));
-	}
+
+	for(iter = docs.begin(); iter != docs.end(); ++iter)
+		doclist.push_back(triedoc(sitename, mount_path(sitename, *iter)));
 	mounted = true;
+	mounttype = mode;
 }
 
 void triesite::unmount(){
-	if(!mounted)
-		return;
 	doclist.clear();
 	sitename = "";
 	mounttype = '\0';
 	mounted = false;
 }
 
-list<triedoc>::iterator triesite::docexists(string compname){
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
+triedoc* triesite::docexists(string compname){
 	list<triedoc>::iterator iter;
 	for(iter = doclist.begin(); iter != doclist.end(); ++iter)
 		if(iter->getdocname().compare(compname) == 0){
-			return iter;
+			return &(*iter);
 		}
-	return doclist.end();
+	return NULL;
 }
 
 void triesite::docupload(string name,char func) {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
-	if(docexists(name)==doclist.end())
+	if(docexists(name)==NULL)
+	{
 		doclist.push_back(triedoc(sitename,name,func));
+	}
 	else
-		throw exception("Document already exists in search site");
+		throw SiteException("upload" + name, true);
 }
 
 string triesite::docdownload(string name,string path = getCurrentPath()) {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
 	path = makeFullPath(path);
-	list<triedoc>::iterator doc = docexists(name);
-	if(doc != doclist.end())
+	triedoc* doc = docexists(name);
+	if(doc != NULL)
 		doc->getdoc(sitename,path);
 	else
 		return NULL;
@@ -92,12 +82,12 @@ string triesite::docdownload(string name,string path = getCurrentPath()) {
 
 void triesite::del(char removeType)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
 	if(removeType=='P'||removeType=='p')
 		removeDirectoryWithSubs(sitename);
-	else if(!(removeType=='L'||removeType=='l'))
-		return;
+	else if(removeType=='L'||removeType=='l')
+	{}
+	else
+	{return;}
 	sitename = "";
 	doclist.clear();
 	mounted = false;
@@ -106,45 +96,36 @@ void triesite::del(char removeType)
 
 void triesite::docdel(string name,char type)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
-	list<triedoc>::iterator targ = docexists(name);
-	if(targ == doclist.end())
-		throw exception(("Couldn't delete " + name + " because "
-			"there is no document by that name.").c_str());
+	triedoc* targ = docexists(name);
+	if(targ == NULL)
+		throw SiteException("delete " + name);
 	else 
 	{
 		targ->del(sitename,type);
-		doclist.erase(targ);
+	//	doclist.remove(*targ); //FIXME PLZ TODO
 	}
 }
 
 void triesite::putstopfl(string stopName)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
 	if(getFileSuffix(stopName) !="stop")
-		throw exception((stopName + " is not a valid stop file").c_str());
+		throw SystemException(stopName + " is not a valid stop file");
 	string stopSrc = makeFullPath(stopName);
 	copyFileToDirectory(stopSrc,sitename,true);
-	rename(appendPath(sitename,getFileName(stopName)).c_str(),appendPath(sitename,"stop.lst").c_str());
+	rename((sitename + '\\' + getFileName(stopName)).c_str(), (sitename + "\\stop.lst").c_str());
 }
 
 void triesite::docidx(string docName)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
-	list<triedoc>::iterator targ = docexists(docName);
-	if(targ == doclist.end())
-		throw exception(("Couldn't index " + docName + " because "
-			"there is no document by the name: ").c_str());
+	triedoc* targ = docexists(docName);
+	if(targ == NULL)
+		throw SystemException("Couldn't index " + docName + " because "
+			"there is no document by the name: ");
 	else 
 		targ->idx(sitename);
 }
 list<string> triesite::listdoc(long listtype)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
 	list<string> ret;
 	list<triedoc>::iterator iter;
 	for(iter = doclist.begin(); iter != doclist.end(); ++iter)
@@ -162,7 +143,7 @@ list<string> triesite::listdoc(long listtype)
 			case 2:
 				break;
 			default:
-				throw exception("Invald list type parameter in triesite::listdoc");
+				throw SystemException("Invald list type");
 			}
 		}
 		else
@@ -172,13 +153,11 @@ list<string> triesite::listdoc(long listtype)
 			case 1:
 				break;
 			case 0:
-				ret.push_back(iter->getdocname());
-				break;
 			case 2:
 				ret.push_back(iter->getdocname());
 				break;
 			default:
-				throw exception("Invald list type parameter in triesite::listdoc");
+				throw SystemException("Invald list type");
 			}
 		}
 	}
@@ -186,30 +165,22 @@ list<string> triesite::listdoc(long listtype)
 }
 string triesite::expsearch(string docName,string expr)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
-	list<triedoc>::iterator targ = docexists(docName);
-	if(targ == doclist.end())
-		throw exception(("Couldn't search " + docName + " because "
-			"there is no document by the name: ").c_str());
+	triedoc* targ = docexists(docName);
+	if(targ == NULL)
+		throw SiteException("search " + docName);
 	else
 		return targ->expsearch(sitename,expr);
 }
 long triesite::expcount(string docName,string expr)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
-	list<triedoc>::iterator targ = docexists(docName);
-	if(targ == doclist.end())
-		throw exception(("Couldn't search " + docName + " because "
-			"there is no document by the name: ").c_str());
+	triedoc* targ = docexists(docName);
+	if(targ == NULL)
+		throw SiteException("search " + docName);
 	else
 		return targ->expcount(sitename,expr);
 }
 list<string> triesite::doclookup(string exp)
 {
-	if(!mounted)
-		throw exception("Can't perform queries on non-mounted search site");
 	list<string> ret;
 	list<string>::iterator iter;
 	list<string> indexed = listdoc(1);
@@ -225,3 +196,4 @@ list<string> triesite::doclookup(string exp)
 triesite::~triesite(){
 	unmount();
 }
+

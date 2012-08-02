@@ -5,8 +5,7 @@
 #include <msclr\marshal.h>
 using namespace Library;
 namespace FMS_5772 {
-	extern triesite site;
-	extern bool admin;
+	
 
 	using namespace System;
 	using namespace System::ComponentModel;
@@ -24,8 +23,10 @@ namespace FMS_5772 {
 	public ref class MaintForm : public System::Windows::Forms::Form
 	{
 	public:
-		MaintForm(void)
+		MaintForm(triesite* _site,bool _admin,string* _sitepath)
 		{
+			site = _site;
+			admin = _admin;
 			InitializeComponent();
 			//
 			//TODO: Add the constructor code here
@@ -33,6 +34,10 @@ namespace FMS_5772 {
 		}
 
 	protected:
+		triesite* site;
+	bool admin;
+	string* sitepath;
+	
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -241,7 +246,7 @@ namespace FMS_5772 {
 	private: System::Void MaintForm_Load(System::Object^  sender, System::EventArgs^  e) {
 				 list<string> docList;
 				 try{
-				 docList = site.listdoc(0); 
+				 docList = site->listdoc(0); 
 				 }
 				 catch(exception e)
 				 {
@@ -258,7 +263,7 @@ namespace FMS_5772 {
 			 }
 	private: System::Void btnUpload_Click(System::Object^  sender, System::EventArgs^  e) {
 				 try{
-				 site.docupload((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer(),(this->rBtnCopy->Checked?'C':'M'));
+				 site->docupload((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer(),(this->rBtnCopy->Checked?'C':'M'));
 				  }
 			 catch(exception e)
 			 {
@@ -268,7 +273,9 @@ namespace FMS_5772 {
 		 }
 	private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
 			 try{
-				 site.create((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer());
+				 //set sitepath
+				 *sitepath = getCurrentPath()+"\\"+(const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer();
+				 site->create((const char*)Marshal::StringToHGlobalAnsi(this->textBox1->Text).ToPointer());
 			  }
 			 catch(exception e)
 			 {
@@ -284,7 +291,7 @@ private: System::Void btnIndex_Click(System::Object^  sender, System::EventArgs^
 					 selectedDoc = selectedDoc.substr(0,selectedDoc.length()-2);
 				 }
 				 try{
-				 site.docidx(selectedDoc);
+				 site->docidx(selectedDoc);
 				 }catch(exception e)
 			 {
 				 MessageBox::Show(gcnew String(e.what()));
@@ -305,7 +312,7 @@ private: System::Void btnDelete_Click(System::Object^  sender, System::EventArgs
 				 }
 				 try{
 					 MessageBox::Show(this->rBtnLogic->Checked?"L":"P");
-				 site.docdel(selectedDoc,(this->rBtnLogic->Checked?'L':'P'));
+				 site->docdel(selectedDoc,(this->rBtnLogic->Checked?'L':'P'));
 				 }catch(exception e)
 			 {
 				 MessageBox::Show(gcnew String(e.what()));

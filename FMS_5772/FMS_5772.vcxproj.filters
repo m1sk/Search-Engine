@@ -56,9 +56,6 @@
     <ClInclude Include="resource.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="searchutils.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="triebuffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -83,10 +80,24 @@
     <ClInclude Include="MaintForm.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="searchutils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="app.rc">
       <Filter>Resource Files</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="MainForm.resX">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="MaintForm.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
+    <EmbeddedResource Include="QueryForm.resx">
+      <Filter>Resource Files</Filter>
+    </EmbeddedResource>
   </ItemGroup>
 </Project>

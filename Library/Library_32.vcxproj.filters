@@ -42,10 +42,10 @@
     <ClInclude Include="..\Library\fileutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="searchutils.h">
+    <ClInclude Include="exceptions.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="exceptions.h">
+    <ClInclude Include="searchutils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

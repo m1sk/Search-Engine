@@ -79,13 +79,12 @@ namespace Library {
 	* PARAMETERS
 	*    string compname - document name (without extension)
 	* RETURN VALUE
-	*    If the document exists return an iterator in doclist
-	*    pointing to the triedoc with compname or doclist.end()
-	*    otherwise
+	*    If the document exists return the triedoc for compname
+	*    or NULL otherwise
 	* MEANING
 	*     Checks if a the parameter compname is in the triesite
 	**************************************************/
-		list<triedoc>::iterator docexists(string compname);
+		triedoc* docexists(string compname);
 	/*************************************************
 	* FUNCTION
 	*    docupload
@@ -241,3 +240,4 @@ namespace Library {
 		~triesite(void);
 	};
 }
+

@@ -7,10 +7,8 @@ namespace Library {
 	struct trienode {
 	// A trienode is a node in a trie tree
 		static const long LINKS_LENGTH = 256;
-		static const long NULL_LINK = -1;
+		static const long INVALID_NODE = -1;
 
-		// The last serial number assigned
-		//static long   lastserialnr;
 		// The serial number for the node in the trie tree
 		long          nodeserialnr;
 		// The offset for the first instance of a word in the text file
@@ -23,42 +21,27 @@ namespace Library {
 		bool          wordend;
 		// Array indeces are the ASCII values of the characters
 		// Array values  are the serial numbers of the next nodes
-		long int      links [LINKS_LENGTH];
-		/*************************************************
-		* FUNCTION
-		*    default constructor
-		* RETURN VALUE
-		*    A trienode object initialized with default data
-		*    (everything 0, except for the links,
-		*     which are initialized to NULL_LINK)
-		**************************************************/
-		trienode();
+		long          links [LINKS_LENGTH];
 		/*************************************************
 		* FUNCTION
 		*    constructor
 		* RETURN VALUE
 		*    A trienode object initialized with the passed data
+		* DEFAULTS
+		*    A trienode object initialized with default data
+		*    (everything -1, letter is ASCII 255,
+		*     links are initialized to INVALID_NODE)
 		**************************************************/
-		trienode(long _firstoffset,
-			long _nrofoccurences, unsigned char _letter,
-			bool _wordend, long _serialnr);
+		trienode(long _serialnr = INVALID_NODE, long _firstoffset = -1,
+			long _nrofoccurences = -1, unsigned char _letter = 0xFF,
+			bool _wordend = false);
 		/*************************************************
 		* FUNCTION
 		*    operator[]
 		* RETURN VALUE
 		*    The index of the trienode pointed to by the ascii value of c
 		**************************************************/
-		long operator[](char c);
-		/*************************************************
-		* FUNCTION
-		*    set_link
-		* PARAMETERS
-		*    char idx - The index of the link to be changed
-		*    long val - The new value for the link
-		* MEANING
-		*    Update the link idx with the new value val
-		**************************************************/
-		void set_link(char idx, long val);
+		long& operator[](char c);
 		/*************************************************
 		* FUNCTION
 		*    print_node
@@ -66,6 +49,29 @@ namespace Library {
 		*    Prints the values of the node nicely
 		**************************************************/
 		void print_node() const;
+		/*************************************************
+		* FUNCTION
+		*    write
+		* PARAMETERS
+		*    trienode& node - A node to write
+		*    ofstream* file - A pointer to the file to
+		*                    write to
+		* MEANING
+		*    Writes the node to file
+		**************************************************/
+		static void write(trienode& node, ofstream* file);
+		/*************************************************
+		* FUNCTION
+		*    read
+		* PARAMETERS
+		* const long serialnr - The serial number of the node
+		*                       to read
+		*      ifstream* file - A pointer to the file to
+		*                       read from
+		* MEANING
+		*    Reads the node from file
+		**************************************************/
+		static trienode read(const long serialnr, ifstream* file);
 	};
-
 }
+

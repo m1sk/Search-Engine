@@ -8,9 +8,7 @@ using namespace std;
 using namespace Library;
 
 namespace FMS_5772 {
-	triesite site;
-	bool admin;
-	string sitepath;
+	
 	using namespace System;
 	using namespace System::ComponentModel;
 	using namespace System::Collections;
@@ -24,6 +22,10 @@ namespace FMS_5772 {
 	/// </summary>
 	public ref class MainForm : public System::Windows::Forms::Form
 	{
+		 triesite* site;
+		 bool admin;
+		 string* sitepath;
+	
 	public:
 		MainForm(void)
 		{
@@ -31,18 +33,26 @@ namespace FMS_5772 {
 			//
 			//TODO: Add the constructor code here
 			//
+			//site = &triesite();
+			sitepath = new string("");
+			admin = false;
+			site = new triesite();
 		}
 
 	protected:
+		
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
 		~MainForm()
 		{
+			delete sitepath;
+			delete site;
 			if (components)
 			{
 				delete components;
 			}
+		//	delete site;
 		}
 
 	protected: 
@@ -224,22 +234,20 @@ private: System::Void btnLogin_Click(System::Object^  sender, System::EventArgs^
 				 ((this->txtUser->Text == "admin") && (this->txtPass->Text == "system"));
 		 }
 private: System::Void button1_Click(System::Object^  sender, System::EventArgs^  e) {
-			 try{
-				 sitepath = (const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer();
-			site.mount((const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer());
-			 }
-			 catch(exception e)
-			 {
+			 try {
+				 *sitepath = getCurrentPath()+"\\"+(const char*)Marshal::StringToHGlobalAnsi(this->txtPath->Text).ToPointer();
+				 site->mount(*sitepath);
+			 } catch(exception e) {
 				 MessageBox::Show(gcnew String(e.what()));
 			 }
-			list<string> docs = site.listdoc(0);
+			list<string> docs = site->listdoc(0);
 			 this->query->Visible = true;
 			 this->button1->Visible = false;
 			 this->button2->Visible = true;
 		 }
 private: System::Void button2_Click(System::Object^  sender, System::EventArgs^  e) {
 			 try{
-			 site.unmount();
+			 site->unmount();
 			  }
 			 catch(exception e)
 			 {
@@ -250,10 +258,10 @@ private: System::Void button2_Click(System::Object^  sender, System::EventArgs^ 
 			 this->button2->Visible = false;
 		 }
 private: System::Void query_Click(System::Object^  sender, System::EventArgs^  e) {
-			 (gcnew QueryForm())->Show();
+			 (gcnew QueryForm(site,admin,sitepath))->Show();
 		 }
 private: System::Void maintain_Click(System::Object^  sender, System::EventArgs^  e) {
-			 (gcnew MaintForm())->Show();
+			 (gcnew MaintForm(site,admin,sitepath))->Show();
 		 }
 };
 }
